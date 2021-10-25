@@ -9,13 +9,13 @@ PAG::Renderer::Renderer()
 {
 	triangleModel = CreateTriangle();
 
-	glm::vec3 cameraPosition(0, 0, -1);
-	glm::vec3 cameraLookAt(0, 0, 4);
-	float cameraFovX = glm::radians(90);
-	float cameraNearZ = 0;
-	float cameraFarZ = 3;
-	int cameraHeight = 500;
-	int cameraWidth = 500;
+	glm::vec3 cameraPosition(0, 0, 2);
+	glm::vec3 cameraLookAt(0, 0, 0);
+	float cameraFovX = glm::radians(60.0f);
+	float cameraNearZ = 0.5;
+	float cameraFarZ = 6;
+	int cameraHeight = 576;
+	int cameraWidth = 1024;
 
 	virtualCamera = new Camera(cameraPosition, cameraLookAt, cameraFovX, cameraNearZ, cameraFarZ, cameraHeight, cameraWidth);
 }
@@ -63,6 +63,19 @@ void PAG::Renderer::Refresh()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	if (activeModel) {
+
+		// - Pasarle los uniforms —————————————
+		std::string mModelViewProjName = "mModelViewProj";
+		glm::mat4 mModelViewProj = virtualCamera->GetModelViewProjMatrix();
+
+		GLint location = glGetUniformLocation(triangleModel->GetIdSP(), mModelViewProjName.c_str());
+		if (location != -1) {
+			glUniformMatrix4fv(location, 1, GL_FALSE, &mModelViewProj[0][0]);
+		}
+		else {
+			std::cout << "Cannot find localization for: " << mModelViewProjName << std::endl;
+		}
+
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glUseProgram(triangleModel->GetIdSP());
 		glBindVertexArray(triangleModel->GetIdVAO());
@@ -110,8 +123,8 @@ void PAG::Renderer::DeleteModel()
 PAG::Model* PAG::Renderer::CreateTriangle()
 {
 	glm::vec3 v1 = { -.5, -.5, 0.0 };
-	glm::vec3 v2 = { .5, -.5, 0 };
-	glm::vec3 v3 = { .0, .5, 0 };
+	glm::vec3 v2 = { .5, -.5, 0.0 };
+	glm::vec3 v3 = { .0, .5, 0.0 };
 
 	glm::vec3 c1 = { 1.0, 0.0, 0.0 };
 	glm::vec3 c2 = { 0.0, 1.0, 0.0 };

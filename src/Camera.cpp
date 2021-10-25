@@ -5,7 +5,7 @@
 #include <glm/gtx/transform.hpp>
 
 Camera::Camera(glm::vec3 position, glm::vec3 lookAt, float fovX, float nearZ, float farZ, int height, int width) :
-	position(position), lookAt(lookAt), fovX(fovX), nearZ(nearZ), farZ(farZ), height(height), width(width)
+	position(position), lookAt(lookAt), fovX(fovX), zNear(nearZ), zFar(farZ), height(height), width(width)
 {
 	aspect = (float)width / (float)height;
 	fovY = 2 * glm::atan(glm::tan(fovX / 2) / aspect);
@@ -32,6 +32,16 @@ Camera::Camera(glm::vec3 position, glm::vec3 lookAt, float fovX, float nearZ, fl
 	}
 
 	v = glm::cross(n, u);
+}
+
+
+
+glm::mat4 Camera::GetModelViewProjMatrix()
+{
+	glm::mat4 view = glm::lookAt(position, lookAt, u);
+	glm::mat4 projection = glm::perspective(fovY, aspect, zNear, zFar);
+
+	return projection * view;
 }
 
 void Camera::Pan(float angle)
