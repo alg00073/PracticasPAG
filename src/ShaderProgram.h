@@ -1,6 +1,6 @@
-#include "ShaderObject.h"
-
 #pragma once
+
+#include "ShaderObject.h"
 
 namespace PAG {
 

@@ -86,6 +86,9 @@ void PAG::Renderer::Refresh()
 
 void PAG::Renderer::Resize(int width, int height)
 {
+	virtualCamera->SetHeight(height);
+	virtualCamera->SetWidth(width);
+
 	glViewport(0, 0, width, height);
 }
 

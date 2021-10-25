@@ -103,7 +103,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(USERPROFILE)\Desktop\glwrappers\glm-0.9.9.0\glm;$(USERPROFILE)\Desktop\glwrappers\glfw-3.2.1.bin.WIN32\include;$(USERPROFILE)\Desktop\glwrappers\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(USERPROFILE)\Desktop\glwrappers\glfw-3.2.1.bin.WIN32\include;$(USERPROFILE)\Desktop\glwrappers\glew-2.1.0\include;$(USERPROFILE)\Desktop\glwrappers\glm-0.9.9.0\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -120,7 +120,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(USERPROFILE)\Desktop\glwrappers\glfw-3.2.1.bin.WIN32\include;$(USERPROFILE)\Desktop\glwrappers\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(USERPROFILE)\Desktop\glwrappers\glfw-3.2.1.bin.WIN32\include;$(USERPROFILE)\Desktop\glwrappers\glew-2.1.0\include;$(USERPROFILE)\Desktop\glwrappers\glm-0.9.9.0\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

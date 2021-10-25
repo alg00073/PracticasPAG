@@ -23,6 +23,11 @@ public:
 
 	glm::mat4 GetModelViewProjMatrix();
 
+	void SetHeight(int height);
+	void SetWidth(int width);
+
+	void RecalculateCamera();
+
 	// Camera movements
 	void Pan(float angle);
 	void Tilt(float angle);
