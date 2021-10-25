@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <glm/gtx/transform.hpp>
 
-Camera::Camera(glm::vec3 position, glm::vec3 lookAt, float fovX, float nearZ, float farZ, int height, int width) :
+PAG::Camera::Camera(glm::vec3 position, glm::vec3 lookAt, float fovX, float nearZ, float farZ, int height, int width) :
 	position(position), lookAt(lookAt), fovX(fovX), zNear(nearZ), zFar(farZ), height(height), width(width)
 {
 	aspect = (float)width / (float)height;
@@ -33,7 +33,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 lookAt, float fovX, float nearZ, fl
 	v = glm::cross(n, u);
 }
 
-glm::mat4 Camera::GetModelViewProjMatrix()
+glm::mat4 PAG::Camera::GetModelViewProjMatrix()
 {
 	RecalculateCamera();
 
@@ -43,17 +43,17 @@ glm::mat4 Camera::GetModelViewProjMatrix()
 	return projection * view;
 }
 
-void Camera::SetHeight(int height)
+void PAG::Camera::SetHeight(int height)
 {
 	this->height = height;
 }
 
-void Camera::SetWidth(int width)
+void PAG::Camera::SetWidth(int width)
 {
 	this->width = width;
 }
 
-void Camera::RecalculateCamera()
+void PAG::Camera::RecalculateCamera()
 {
 	aspect = (float)width / (float)height;
 	fovY = 2 * glm::atan(glm::tan(fovX / 2) / aspect);
@@ -82,16 +82,40 @@ void Camera::RecalculateCamera()
 	v = glm::cross(n, u);
 }
 
-void Camera::Pan(float angle)
+void PAG::Camera::ApplyMovement(double deltaX, double deltaY, MovementType type)
 {
-	glm::mat4 m = glm::translate(-lookAt); // Traslado al origen
-	m = glm::rotate(angle, v); // Hago la rotación
-	m = glm::translate(lookAt); // Traslado de nuevo al punto
+	switch (type)
+	{
+	case PAG::MovementType::PAN:
+		Pan(deltaX);
+		break;
+	case PAG::MovementType::TILT:
+		break;
+	case PAG::MovementType::DOLLY:
+		break;
+	case PAG::MovementType::CRANE:
+		break;
+	case PAG::MovementType::ORBIT:
+		break;
+	case PAG::MovementType::ZOOM:
+		break;
+	default:
+		break;
+	}
 
-	lookAt = m * glm::vec4(lookAt, 0); // Aplico la transformación
+	RecalculateCamera();
 }
 
-void Camera::Tilt(float angle)
+void PAG::Camera::Pan(float angle)
+{
+	glm::mat4 pan = glm::rotate(glm::radians(angle), v);
+
+	glm::mat4 transformation = glm::translate(glm::mat4(1.0f), position) * pan * glm::translate(glm::mat4(1.0f), -position);
+
+	lookAt = transformation * glm::vec4(lookAt, 0);
+}
+
+void PAG::Camera::Tilt(float angle)
 {
 	glm::mat4 m = glm::translate(lookAt - position); // Traslado lookAt a la posición de la camara
 	m = glm::rotate(angle, u); // Hago la rotación
@@ -100,7 +124,7 @@ void Camera::Tilt(float angle)
 	lookAt = m * glm::vec4(lookAt, 0); // Aplico la transformación
 }
 
-void Camera::Dolly(float x, float z)
+void PAG::Camera::Dolly(float x, float z)
 {
 	glm::vec3 t(x, 0, z);
 
@@ -110,7 +134,7 @@ void Camera::Dolly(float x, float z)
 	lookAt = m * glm::vec4(lookAt, 0);
 }
 
-void Camera::Crane(float y)
+void PAG::Camera::Crane(float y)
 {
 	glm::vec3 t(0, y, 0);
 
@@ -120,7 +144,7 @@ void Camera::Crane(float y)
 	lookAt = m * glm::vec4(lookAt, 0);
 }
 
-void Camera::Orbit(float angleLat, float angleLong)
+void PAG::Camera::Orbit(float angleLat, float angleLong)
 {
 	glm::mat4 m = glm::translate(position - lookAt); // Traslado la posición de la camara al punto lookAt
 	m = glm::rotate(angleLat, u); // Hago la rotación en latitud
@@ -130,7 +154,7 @@ void Camera::Orbit(float angleLat, float angleLong)
 	lookAt = m * glm::vec4(lookAt, 0); // Aplico la transformación
 }
 
-void Camera::Zoom(float angle)
+void PAG::Camera::Zoom(float angle)
 {
 	fovX += angle;
 }

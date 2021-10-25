@@ -6,6 +6,9 @@
 
 #include "Renderer.h"
 
+bool leftMouseButtonPressed = false;
+double lastMouseX, lastMouseY;
+
 // - Esta función callback será llamada cada vez que el área de dibujo
 // OpenGL deba ser redibujada.
 void window_refresh_callback(GLFWwindow* window)
@@ -44,19 +47,61 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		PAG::Renderer::Instance()->DeleteModel();
 		window_refresh_callback(window);
 	}
+
+	// Switch between the movement types
+	if (key == GLFW_KEY_P && action == GLFW_PRESS) {
+		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::MovementType::PAN);
+	}
+	if (key == GLFW_KEY_T && action == GLFW_PRESS) {
+		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::MovementType::TILT);
+	}
+	if (key == GLFW_KEY_D && action == GLFW_PRESS) {
+		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::MovementType::DOLLY);
+	}
+	if (key == GLFW_KEY_C && action == GLFW_PRESS) {
+		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::MovementType::CRANE);
+	}
+	if (key == GLFW_KEY_O && action == GLFW_PRESS) {
+		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::MovementType::ORBIT);
+	}
+	if (key == GLFW_KEY_Z && action == GLFW_PRESS) {
+		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::MovementType::ZOOM);
+	}
+
 	std::cout << "Key callback called" << std::endl;
+}
+
+void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	if (leftMouseButtonPressed) {
+
+		double deltaX, deltaY;
+
+		deltaX = xpos - lastMouseX;
+		deltaY = ypos - lastMouseY;
+
+		std::cout << "DeltaX: " << deltaX << std::endl;
+
+		PAG::Renderer::Instance()->ApplyCameraMovement(deltaX, deltaY);
+
+		window_refresh_callback(window);
+	}
 }
 // - Esta función callback será llamada cada vez que se pulse algún botón
 // del ratón sobre el área de dibujo OpenGL.
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
-	if (action == GLFW_PRESS)
+	if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS)
 	{
 		std::cout << "Pulsado el boton: " << button << std::endl;
+		leftMouseButtonPressed = true;
+
+		glfwGetCursorPos(window, &lastMouseX, &lastMouseY);
 	}
-	else if (action == GLFW_RELEASE)
+	else if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_RELEASE)
 	{
 		std::cout << "Soltado el boton: " << button << std::endl;
+		leftMouseButtonPressed = false;
 	}
 }
 // - Esta función callback será llamada cada vez que se mueva la rueda
@@ -160,8 +205,10 @@ int main()
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetScrollCallback(window, scroll_callback);
+	glfwSetCursorPosCallback(window, cursor_position_callback);
 
 	PAG::Renderer::Instance()->InitializeOpenGL();
+	PAG::Renderer::Instance()->Refresh();
 
 	// - Ciclo de eventos de la aplicación. La condición de parada es que la
 	// ventana principal deba cerrarse, por ejemplo, si el usuario pulsa el

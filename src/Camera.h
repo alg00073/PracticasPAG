@@ -2,38 +2,52 @@
 #include "glm/glm.hpp"
 #include <glm/ext/vector_relational.hpp> // Para equal
 
-class Camera
-{
-private:
-	glm::vec3 position; // Posición de la cámara
-	glm::vec3 lookAt; // Punto al que mira la cámara
+namespace PAG {
 
-	glm::vec3 u, v, n; // Sistemas de coordenadas local UVN
+	enum class MovementType {
+		PAN,
+		TILT,
+		DOLLY,
+		CRANE,
+		ORBIT,
+		ZOOM
+	};
 
-	float fovX, fovY; // Ángulos de visión en horizontal y vertical
+	class Camera
+	{
+	private:
+		glm::vec3 position; // Posición de la cámara
+		glm::vec3 lookAt; // Punto al que mira la cámara
 
-	float zNear, zFar; // Planos Z near y Z far
+		glm::vec3 u, v, n; // Sistemas de coordenadas local UVN
 
-	int height, width; // Alto y ancho del viewport
-	float aspect; // Relacion de aspecto entre altura y anchura (width / height)
+		float fovX, fovY; // Ángulos de visión en horizontal y vertical
 
-public:
+		float zNear, zFar; // Planos Z near y Z far
 
-	Camera(glm::vec3 position, glm::vec3 lookAt, float fovX, float nearZ, float farZ, int height, int width);
+		int height, width; // Alto y ancho del viewport
+		float aspect; // Relacion de aspecto entre altura y anchura (width / height)
 
-	glm::mat4 GetModelViewProjMatrix();
+		// Camera movements
+		void Pan(float angle);
+		void Tilt(float angle);
+		void Dolly(float x, float z);
+		void Crane(float y);
+		void Orbit(float angleLat, float angleLong);
+		void Zoom(float angle);
 
-	void SetHeight(int height);
-	void SetWidth(int width);
+	public:
 
-	void RecalculateCamera();
+		Camera(glm::vec3 position, glm::vec3 lookAt, float fovX, float nearZ, float farZ, int height, int width);
 
-	// Camera movements
-	void Pan(float angle);
-	void Tilt(float angle);
-	void Dolly(float x, float z);
-	void Crane(float y);
-	void Orbit(float angleLat, float angleLong);
-	void Zoom(float angle);
-};
+		glm::mat4 GetModelViewProjMatrix();
+
+		void SetHeight(int height);
+		void SetWidth(int width);
+
+		void RecalculateCamera();
+
+		void ApplyMovement(double deltaX, double deltaY, MovementType type);
+	};
+}
 

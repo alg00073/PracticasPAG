@@ -18,6 +18,7 @@ namespace PAG {
 		Model* triangleModel;
 
 		Camera* virtualCamera;
+		MovementType actualMovementType = PAG::MovementType::PAN;
 
 		Renderer();
 		Model* CreateTriangle();
@@ -34,6 +35,8 @@ namespace PAG {
 		void ShoutInfo();
 		void AddModel();
 		void DeleteModel();
+		void ChangeCameraMovement(PAG::MovementType type);
+		void ApplyCameraMovement(double deltaX, double deltaY);
 	};
 }
 

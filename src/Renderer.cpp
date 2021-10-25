@@ -123,6 +123,16 @@ void PAG::Renderer::DeleteModel()
 	activeModel = false;
 }
 
+void PAG::Renderer::ChangeCameraMovement(PAG::MovementType type)
+{
+	actualMovementType = type;
+}
+
+void PAG::Renderer::ApplyCameraMovement(double deltaX, double deltaY)
+{
+	virtualCamera->ApplyMovement(deltaX, deltaY, actualMovementType);
+}
+
 PAG::Model* PAG::Renderer::CreateTriangle()
 {
 	glm::vec3 v1 = { -.5, -.5, 0.0 };
