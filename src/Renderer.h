@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include "Model.h"
+#include "Camera.h"
 
 namespace PAG {
 	class Renderer
@@ -15,6 +16,8 @@ namespace PAG {
 
 		bool activeModel = true;
 		Model* triangleModel;
+
+		Camera* virtualCamera;
 
 		Renderer();
 		Model* CreateTriangle();

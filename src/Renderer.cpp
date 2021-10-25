@@ -8,6 +8,16 @@ PAG::Renderer* PAG::Renderer::instance = nullptr;
 PAG::Renderer::Renderer()
 {
 	triangleModel = CreateTriangle();
+
+	glm::vec3 cameraPosition(0, 0, -1);
+	glm::vec3 cameraLookAt(0, 0, 4);
+	float cameraFovX = glm::radians(90);
+	float cameraNearZ = 0;
+	float cameraFarZ = 3;
+	int cameraHeight = 500;
+	int cameraWidth = 500;
+
+	virtualCamera = new Camera(cameraPosition, cameraLookAt, cameraFovX, cameraNearZ, cameraFarZ, cameraHeight, cameraWidth);
 }
 
 PAG::Renderer::~Renderer()
