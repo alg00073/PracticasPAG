@@ -48,6 +48,8 @@ namespace PAG {
 		void RecalculateCamera();
 
 		void ApplyMovement(double deltaX, double deltaY, MovementType type);
+
+		void Reset();
 	};
 }
 

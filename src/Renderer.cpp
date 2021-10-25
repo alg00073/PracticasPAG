@@ -130,7 +130,17 @@ void PAG::Renderer::ChangeCameraMovement(PAG::MovementType type)
 
 void PAG::Renderer::ApplyCameraMovement(double deltaX, double deltaY)
 {
-	virtualCamera->ApplyMovement(deltaX, deltaY, actualMovementType);
+	try {
+		virtualCamera->ApplyMovement(deltaX, deltaY, actualMovementType);
+	}
+	catch (std::exception& ex) {
+		throw std::runtime_error("Renderer::ApplyCameraMovement() -> " + std::string(ex.what()));
+	}
+}
+
+void PAG::Renderer::ResetCamera()
+{
+	virtualCamera->Reset();
 }
 
 PAG::Model* PAG::Renderer::CreateTriangle()

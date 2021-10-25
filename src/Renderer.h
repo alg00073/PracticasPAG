@@ -37,6 +37,7 @@ namespace PAG {
 		void DeleteModel();
 		void ChangeCameraMovement(PAG::MovementType type);
 		void ApplyCameraMovement(double deltaX, double deltaY);
+		void ResetCamera();
 	};
 }
 

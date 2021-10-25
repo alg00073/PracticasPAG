@@ -37,17 +37,21 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	{
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 	}
-	if (key == GLFW_KEY_A && action == GLFW_PRESS) 
+	if (key == GLFW_KEY_A && action == GLFW_PRESS)
 	{
 		PAG::Renderer::Instance()->AddModel();
 		window_refresh_callback(window);
 	}
-	if (key == GLFW_KEY_D && action == GLFW_PRESS)
+	if (key == GLFW_KEY_B && action == GLFW_PRESS)
 	{
 		PAG::Renderer::Instance()->DeleteModel();
 		window_refresh_callback(window);
 	}
 
+	// Reset the camera
+	if (key == GLFW_KEY_R && action == GLFW_PRESS) {
+		PAG::Renderer::Instance()->ResetCamera();
+	}
 	// Switch between the movement types
 	if (key == GLFW_KEY_P && action == GLFW_PRESS) {
 		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::MovementType::PAN);
@@ -80,9 +84,15 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 		deltaX = xpos - lastMouseX;
 		deltaY = ypos - lastMouseY;
 
-		std::cout << "DeltaX: " << deltaX << std::endl;
+		try {
+			PAG::Renderer::Instance()->ApplyCameraMovement(deltaX, deltaY);
 
-		PAG::Renderer::Instance()->ApplyCameraMovement(deltaX, deltaY);
+			lastMouseX = xpos;
+			lastMouseY = ypos;
+		}
+		catch (std::exception& ex) {
+			std::cout << ex.what() << std::endl;
+		}
 
 		window_refresh_callback(window);
 	}
