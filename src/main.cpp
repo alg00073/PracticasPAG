@@ -39,36 +39,49 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 	if (key == GLFW_KEY_A && action == GLFW_PRESS)
 	{
+		std::cout << "Modelo añadido" << std::endl;
+
 		PAG::Renderer::Instance()->AddModel();
 		window_refresh_callback(window);
 	}
 	if (key == GLFW_KEY_B && action == GLFW_PRESS)
 	{
+		std::cout << "Modelo borrado" << std::endl;
+
 		PAG::Renderer::Instance()->DeleteModel();
 		window_refresh_callback(window);
 	}
 
 	// Reset the camera
 	if (key == GLFW_KEY_R && action == GLFW_PRESS) {
+
+		std::cout << "Camara reseteada" << std::endl;
+
 		PAG::Renderer::Instance()->ResetCamera();
 	}
 	// Switch between the movement types
 	if (key == GLFW_KEY_P && action == GLFW_PRESS) {
+		std::cout << "Movimiento actual: PAN" << std::endl;
 		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::MovementType::PAN);
 	}
 	if (key == GLFW_KEY_T && action == GLFW_PRESS) {
+		std::cout << "Movimiento actual: TILT" << std::endl;
 		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::MovementType::TILT);
 	}
 	if (key == GLFW_KEY_D && action == GLFW_PRESS) {
+		std::cout << "Movimiento actual: DOLLY" << std::endl;
 		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::MovementType::DOLLY);
 	}
 	if (key == GLFW_KEY_C && action == GLFW_PRESS) {
+		std::cout << "Movimiento actual: CRANE" << std::endl;
 		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::MovementType::CRANE);
 	}
 	if (key == GLFW_KEY_O && action == GLFW_PRESS) {
+		std::cout << "Movimiento actual: ORBIT" << std::endl;
 		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::MovementType::ORBIT);
 	}
 	if (key == GLFW_KEY_Z && action == GLFW_PRESS) {
+		std::cout << "Movimiento actual: ZOOM" << std::endl;
 		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::MovementType::ZOOM);
 	}
 
@@ -219,6 +232,12 @@ int main()
 
 	PAG::Renderer::Instance()->InitializeOpenGL();
 	PAG::Renderer::Instance()->Refresh();
+
+	std::cout << "CONTROLES: \nA: Añadir modelo\nB: Borrar modelo" << 
+		"\nR: Resetear la cámara\nP : Seleccionar movimiento PAN" <<
+		"\nT : Seleccionar movimiento TILT\nD : Seleccionar movimiento DOLLY" << 
+		"\nC : Seleccionar movimiento CRANE\nO : Seleccionar movimiento ORBIT" << 
+		"\nZ : Seleccionar movimiento ZOOM" << std::endl;
 
 	// - Ciclo de eventos de la aplicación. La condición de parada es que la
 	// ventana principal deba cerrarse, por ejemplo, si el usuario pulsa el

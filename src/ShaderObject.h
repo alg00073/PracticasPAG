@@ -15,7 +15,7 @@ namespace PAG {
 	private:
 		ShaderType type;
 
-		const std::string filePrefix = "pag05-";
+		const std::string filePrefix = "pag06-";
 		const std::string fileSufix = ".glsl";
 
 		std::string fileName;
