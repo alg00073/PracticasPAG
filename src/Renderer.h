@@ -6,22 +6,31 @@
 #include "Camera.h"
 
 namespace PAG {
+
+	enum class RenderMode {
+		SOLID,
+		WIREFRAME
+	};
+
 	class Renderer
 	{
 
 	private:
 		static Renderer* instance;
 
+		RenderMode activeRenderMode = PAG::RenderMode::SOLID;
+
 		double clearColor[4] = { 0.6, 0.6, 0.6, 1 };
 
-		bool activeModel = true;
-		Model* triangleModel;
+		int activeModel = 0;
+		Model* model;
 
 		Camera* virtualCamera;
-		MovementType actualMovementType = PAG::MovementType::PAN;
+		MovementType activeMovementType = PAG::MovementType::PAN;
 
 		Renderer();
 		Model* CreateTriangle();
+		Model* CreateTetrahedron();
 
 	public:
 		virtual ~Renderer();
@@ -33,11 +42,12 @@ namespace PAG {
 		void Resize(int width, int height);
 		void EnableDepth();
 		void ShoutInfo();
-		void AddModel();
+		void SwitchModel();
 		void DeleteModel();
 		void ChangeCameraMovement(PAG::MovementType type);
 		void ApplyCameraMovement(double deltaX, double deltaY);
 		void ResetCamera();
+		void ChangeRenderMode(PAG::RenderMode mode);
 	};
 }
 

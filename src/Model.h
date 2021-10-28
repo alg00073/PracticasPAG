@@ -2,6 +2,7 @@
 #include <vector>
 #include "glm/glm.hpp"
 #include "ShaderProgram.h"
+#include "Material.h"
 
 namespace PAG {
 
@@ -25,6 +26,8 @@ namespace PAG {
 
 		ShaderProgram* shaderProgram;
 
+		Material* material;
+
 		GLuint idSP = 0; // Identificador del shader program
 		GLuint idVAO = 0; // Identificador del vertex array object
 		GLuint idVBO = 0; // Identificador del vertex buffer object
@@ -42,6 +45,8 @@ namespace PAG {
 		GLuint GetIdVAO();
 		GLuint GetIdVBO();
 		GLuint GetIdIBO();
+
+		int GetNumIndex();
 	};
 }
 
