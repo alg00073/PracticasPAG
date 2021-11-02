@@ -1,4 +1,5 @@
-﻿  Renderer.cpp
+﻿  Model.cpp
+  Renderer.cpp
 C:\Users\alber\Desktop\Practicas-PAG\src\Renderer.cpp(33,72): warning C4244: 'argumento': conversión de 'double' a 'GLclampf'; posible pérdida de datos
 C:\Users\alber\Desktop\Practicas-PAG\src\Renderer.cpp(33,57): warning C4244: 'argumento': conversión de 'double' a 'GLclampf'; posible pérdida de datos
 C:\Users\alber\Desktop\Practicas-PAG\src\Renderer.cpp(33,42): warning C4244: 'argumento': conversión de 'double' a 'GLclampf'; posible pérdida de datos
@@ -7,4 +8,5 @@ C:\Users\alber\Desktop\Practicas-PAG\src\Renderer.cpp(49,72): warning C4244: 'ar
 C:\Users\alber\Desktop\Practicas-PAG\src\Renderer.cpp(49,57): warning C4244: 'argumento': conversión de 'double' a 'GLclampf'; posible pérdida de datos
 C:\Users\alber\Desktop\Practicas-PAG\src\Renderer.cpp(49,42): warning C4244: 'argumento': conversión de 'double' a 'GLclampf'; posible pérdida de datos
 C:\Users\alber\Desktop\Practicas-PAG\src\Renderer.cpp(49,27): warning C4244: 'argumento': conversión de 'double' a 'GLclampf'; posible pérdida de datos
+  Generando código...
   Practicas-PAG.vcxproj -> C:\Users\alber\Desktop\Practicas-PAG\Debug\Practicas-PAG.exe

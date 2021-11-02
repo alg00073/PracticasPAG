@@ -12,6 +12,9 @@ namespace PAG {
 		float Ns; // Exponente de phong (brillo)
 	public:
 		Material(glm::vec3 Ia, glm::vec3 Id, glm::vec3 Is, float Ns);
+		Material(const Material& other);
+
+		glm::vec3 GetDiffuseColor();
 	};
 }
 

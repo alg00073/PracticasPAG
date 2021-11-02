@@ -64,16 +64,28 @@ void PAG::Renderer::Refresh()
 
 	if (activeModel != -1) {
 
-		// - Pasarle los uniforms —————————————
+		// Uniform matriz modelado y proyección
 		std::string mModelViewProjName = "mModelViewProj";
 		glm::mat4 mModelViewProj = virtualCamera->GetModelViewProjMatrix();
 
-		GLint location = glGetUniformLocation(model->GetIdSP(), mModelViewProjName.c_str());
-		if (location != -1) {
-			glUniformMatrix4fv(location, 1, GL_FALSE, &mModelViewProj[0][0]);
+		GLint mModelViewProjLocation = glGetUniformLocation(model->GetIdSP(), mModelViewProjName.c_str());
+		if (mModelViewProjLocation != -1) {
+			glUniformMatrix4fv(mModelViewProjLocation, 1, GL_FALSE, &mModelViewProj[0][0]);
 		}
 		else {
 			std::cout << "Cannot find localization for: " << mModelViewProjName << std::endl;
+		}
+
+		// Uniform color difuso del material
+		std::string IdName = "Id";
+		glm::vec3 Id = model->GetMaterial()->GetDiffuseColor();
+
+		GLint IdLocation = glGetUniformLocation(model->GetIdSP(), IdName.c_str());
+		if (IdLocation != -1) {
+			glUniform3fv(IdLocation, 1, &Id[0]);
+		}
+		else {
+			std::cout << "Cannot find localization for: " << IdName << std::endl;
 		}
 
 		glUseProgram(model->GetIdSP());
@@ -94,6 +106,12 @@ void PAG::Renderer::Refresh()
 			aux = glGetSubroutineIndex(model->GetIdSP(), GL_FRAGMENT_SHADER,
 				"colorWireframe");
 
+			break;
+		case RenderMode::RAINBOW:
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+			aux = glGetSubroutineIndex(model->GetIdSP(), GL_FRAGMENT_SHADER,
+				"colorRainbow");
 			break;
 		}
 
@@ -205,7 +223,15 @@ PAG::Model* PAG::Renderer::CreateTriangle()
 
 	std::vector<GLuint> index = { 0, 1, 2 };
 
+	glm::vec3 Ia(0.8, 0.3, 0.3);
+	glm::vec3 Id(0.67, 0.16, 0.24);
+	glm::vec3 Is(0.9, 0.9, 0.9);
+	float Ns = 8.0;
+
 	Model* triangle = new Model(vertex, index);
+	Material* material = new Material(Ia, Id, Is, Ns);
+
+	triangle->SetMaterial(material);
 	triangle->AssignShaderProgram("vs", "fs");
 
 	return triangle;
@@ -237,7 +263,15 @@ PAG::Model* PAG::Renderer::CreateTetrahedron()
 	// Triángulo 4 (3, 0, 2)
 	std::vector<GLuint> index = { 0, 1, 2, 1, 0, 3, 2, 1, 3, 3, 0, 2 };
 
+	glm::vec3 Ia(0.8, 0.3, 0.3);
+	glm::vec3 Id(0.67, 0.16, 0.24);
+	glm::vec3 Is(0.9, 0.9, 0.9);
+	float Ns = 8.0;
+
 	Model* tetrahedron = new Model(vertex, index);
+	Material* material = new Material(Ia, Id, Is, Ns);
+
+	tetrahedron->SetMaterial(material);
 	tetrahedron->AssignShaderProgram("vs", "fs");
 
 	return tetrahedron;

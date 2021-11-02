@@ -47,11 +47,13 @@ PAG::Model::~Model()
 	glDeleteVertexArrays(1, &idVAO);
 
 	delete shaderProgram;
+	delete material;
 }
 
 PAG::Model::Model(const Model& other): vertex(other.vertex), index(other.index)
 {
 	shaderProgram = new ShaderProgram(*other.shaderProgram);
+	material = new Material(*other.material);
 }
 
 void PAG::Model::AssignShaderProgram(std::string vertexShader, std::string fragmentShader)
@@ -89,4 +91,14 @@ GLuint PAG::Model::GetIdIBO()
 int PAG::Model::GetNumIndex()
 {
 	return index.size();
+}
+
+void PAG::Model::SetMaterial(Material* material)
+{
+	this->material = material;
+}
+
+PAG::Material* PAG::Model::GetMaterial()
+{
+	return material;
 }

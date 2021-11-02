@@ -47,6 +47,9 @@ namespace PAG {
 		GLuint GetIdIBO();
 
 		int GetNumIndex();
+
+		void SetMaterial(Material* material);
+		Material* GetMaterial();
 	};
 }
 
