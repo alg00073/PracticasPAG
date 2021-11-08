@@ -23,6 +23,9 @@ PAG::Renderer::Renderer()
 PAG::Renderer::~Renderer()
 {
 	delete model;
+	delete virtualCamera;
+
+	model, virtualCamera = nullptr;
 }
 
 /**
@@ -64,6 +67,8 @@ void PAG::Renderer::Refresh()
 
 	if (activeModel != -1) {
 
+		glUseProgram(model->GetIdSP());
+
 		// - Pasarle los uniforms —————————————
 		std::string mModelViewProjName = "mModelViewProj";
 		glm::mat4 mModelViewProj = virtualCamera->GetModelViewProjMatrix();
@@ -75,8 +80,6 @@ void PAG::Renderer::Refresh()
 		else {
 			std::cout << "Cannot find localization for: " << mModelViewProjName << std::endl;
 		}
-
-		glUseProgram(model->GetIdSP());
 
 		GLuint aux;
 

@@ -61,12 +61,7 @@ void PAG::Camera::RecalculateCamera()
 		}
 	}
 
-	try {
-		v = glm::cross(n, u);
-	}
-	catch (std::exception& ex) {
-		throw std::runtime_error("Camera::RecalculateCamera() -> " + std::string(ex.what()));
-	}
+	v = glm::cross(n, u);
 }
 
 void PAG::Camera::ApplyMovement(double deltaX, double deltaY, MovementType type)
@@ -112,9 +107,9 @@ void PAG::Camera::ApplyMovement(double deltaX, double deltaY, MovementType type)
 
 void PAG::Camera::Reset()
 {
-	glm::vec3 cameraPosition(0, 0, 2);
-	glm::vec3 cameraLookAt(0, 0, 0);
-	float cameraFovX = glm::radians(60.0f);
+	position = glm::vec3(0, 0, 2);
+	lookAt = glm::vec3(0, 0, 0);
+	fovX = glm::radians(60.0f);
 
 	RecalculateCamera();
 }

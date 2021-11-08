@@ -94,7 +94,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			"\nR: Resetear la cámara\nP : Seleccionar movimiento PAN" <<
 			"\nT : Seleccionar movimiento TILT\nD : Seleccionar movimiento DOLLY" <<
 			"\nC : Seleccionar movimiento CRANE\nO : Seleccionar movimiento ORBIT" <<
-			"\nZ : Seleccionar movimiento ZOOM" << std::endl;
+			"\nZ : Seleccionar movimiento ZOOM\nFlechas: Mover cámara con teclado" << std::endl;
 		break;
 	}
 }
