@@ -60,7 +60,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		PAG::Renderer::Instance()->ChangeRenderMode(PAG::RenderMode::SOLID);
 		window_refresh_callback(window);
 		break;
-	case GLFW_KEY_R: // Reset the camera
+	case GLFW_KEY_R:
+		std::cout << "Cambiado modo de render a: RAINBOW" << std::endl;
+		PAG::Renderer::Instance()->ChangeRenderMode(PAG::RenderMode::RAINBOW);
+		window_refresh_callback(window);
+		break;
+	case GLFW_KEY_ENTER: // Reset the camera
 		std::cout << "Camara reseteada" << std::endl;
 		PAG::Renderer::Instance()->ResetCamera();
 		break;
@@ -91,7 +96,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	default:
 		std::cout << "CONTROLES: \nA: Cambiar modelo\nB: Borrar modelo" <<
 			"\nW: Cambiar modo de render WIREFRAME\nS : Cambiar modo de render SOLID" <<
-			"\nR: Resetear la cámara\nP : Seleccionar movimiento PAN" <<
+			"\nR: Cambiar modo de render RAINBOW" <<
+			"\nENTER: Resetear la cámara\nP : Seleccionar movimiento PAN" <<
 			"\nT : Seleccionar movimiento TILT\nD : Seleccionar movimiento DOLLY" <<
 			"\nC : Seleccionar movimiento CRANE\nO : Seleccionar movimiento ORBIT" <<
 			"\nZ : Seleccionar movimiento ZOOM\nFlechas: Mover cámara con teclado" << std::endl;

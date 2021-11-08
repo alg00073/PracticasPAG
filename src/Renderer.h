@@ -9,7 +9,8 @@ namespace PAG {
 
 	enum class RenderMode {
 		SOLID,
-		WIREFRAME
+		WIREFRAME,
+		RAINBOW
 	};
 
 	class Renderer
