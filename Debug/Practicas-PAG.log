@@ -1,2 +1,0 @@
-﻿  Renderer.cpp
-C:\Users\alber\Desktop\PracticasPAG\src\Renderer.cpp : fatal error C1041: no puede abrir la base de datos de programa 'C:\Users\alber\Desktop\PracticasPAG\Debug\vc142.pdb'. Si varios CL.EXE escriben en el mismo archivo .PDB, use /FS.
