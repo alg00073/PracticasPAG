@@ -93,6 +93,22 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		std::cout << "Movimiento actual: ZOOM" << std::endl;
 		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::MovementType::ZOOM);
 		break;
+	case GLFW_KEY_LEFT:
+		PAG::Renderer::Instance()->ApplyCameraMovement(-1, 0);
+		window_refresh_callback(window);
+		break;
+	case GLFW_KEY_RIGHT:
+		PAG::Renderer::Instance()->ApplyCameraMovement(1, 0);
+		window_refresh_callback(window);
+		break;
+	case GLFW_KEY_UP:
+		PAG::Renderer::Instance()->ApplyCameraMovement(0, 1);
+		window_refresh_callback(window);
+		break;
+	case GLFW_KEY_DOWN:
+		PAG::Renderer::Instance()->ApplyCameraMovement(0, -1);
+		window_refresh_callback(window);
+		break;
 	default:
 		std::cout << "CONTROLES: \nA: Cambiar modelo\nB: Borrar modelo" <<
 			"\nW: Cambiar modo de render WIREFRAME\nS : Cambiar modo de render SOLID" <<

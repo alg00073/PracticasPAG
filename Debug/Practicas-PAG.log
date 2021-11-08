@@ -1,12 +1,2 @@
-﻿  Model.cpp
-  Renderer.cpp
-C:\Users\alber\Desktop\Practicas-PAG\src\Renderer.cpp(33,72): warning C4244: 'argumento': conversión de 'double' a 'GLclampf'; posible pérdida de datos
-C:\Users\alber\Desktop\Practicas-PAG\src\Renderer.cpp(33,57): warning C4244: 'argumento': conversión de 'double' a 'GLclampf'; posible pérdida de datos
-C:\Users\alber\Desktop\Practicas-PAG\src\Renderer.cpp(33,42): warning C4244: 'argumento': conversión de 'double' a 'GLclampf'; posible pérdida de datos
-C:\Users\alber\Desktop\Practicas-PAG\src\Renderer.cpp(33,27): warning C4244: 'argumento': conversión de 'double' a 'GLclampf'; posible pérdida de datos
-C:\Users\alber\Desktop\Practicas-PAG\src\Renderer.cpp(49,72): warning C4244: 'argumento': conversión de 'double' a 'GLclampf'; posible pérdida de datos
-C:\Users\alber\Desktop\Practicas-PAG\src\Renderer.cpp(49,57): warning C4244: 'argumento': conversión de 'double' a 'GLclampf'; posible pérdida de datos
-C:\Users\alber\Desktop\Practicas-PAG\src\Renderer.cpp(49,42): warning C4244: 'argumento': conversión de 'double' a 'GLclampf'; posible pérdida de datos
-C:\Users\alber\Desktop\Practicas-PAG\src\Renderer.cpp(49,27): warning C4244: 'argumento': conversión de 'double' a 'GLclampf'; posible pérdida de datos
-  Generando código...
-  Practicas-PAG.vcxproj -> C:\Users\alber\Desktop\Practicas-PAG\Debug\Practicas-PAG.exe
+﻿  Renderer.cpp
+C:\Users\alber\Desktop\PracticasPAG\src\Renderer.cpp : fatal error C1041: no puede abrir la base de datos de programa 'C:\Users\alber\Desktop\PracticasPAG\Debug\vc142.pdb'. Si varios CL.EXE escriben en el mismo archivo .PDB, use /FS.

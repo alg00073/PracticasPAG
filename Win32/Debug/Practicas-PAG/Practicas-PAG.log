@@ -1,0 +1,26 @@
+﻿  Camera.cpp
+C:\Users\alber\Desktop\PracticasPAG\src\Camera.cpp(72,7): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\alber\Desktop\PracticasPAG\src\Camera.cpp(75,8): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\alber\Desktop\PracticasPAG\src\Camera.cpp(82,21): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\alber\Desktop\PracticasPAG\src\Camera.cpp(82,9): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\alber\Desktop\PracticasPAG\src\Camera.cpp(89,9): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\alber\Desktop\PracticasPAG\src\Camera.cpp(93,17): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\alber\Desktop\PracticasPAG\src\Camera.cpp(93,9): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\alber\Desktop\PracticasPAG\src\Camera.cpp(98,8): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+  main.cpp
+  Material.cpp
+  Model.cpp
+  Renderer.cpp
+C:\Users\alber\Desktop\PracticasPAG\src\Renderer.cpp(36,72): warning C4244: 'argumento': conversión de 'double' a 'GLclampf'; posible pérdida de datos
+C:\Users\alber\Desktop\PracticasPAG\src\Renderer.cpp(36,57): warning C4244: 'argumento': conversión de 'double' a 'GLclampf'; posible pérdida de datos
+C:\Users\alber\Desktop\PracticasPAG\src\Renderer.cpp(36,42): warning C4244: 'argumento': conversión de 'double' a 'GLclampf'; posible pérdida de datos
+C:\Users\alber\Desktop\PracticasPAG\src\Renderer.cpp(36,27): warning C4244: 'argumento': conversión de 'double' a 'GLclampf'; posible pérdida de datos
+C:\Users\alber\Desktop\PracticasPAG\src\Renderer.cpp(52,72): warning C4244: 'argumento': conversión de 'double' a 'GLclampf'; posible pérdida de datos
+C:\Users\alber\Desktop\PracticasPAG\src\Renderer.cpp(52,57): warning C4244: 'argumento': conversión de 'double' a 'GLclampf'; posible pérdida de datos
+C:\Users\alber\Desktop\PracticasPAG\src\Renderer.cpp(52,42): warning C4244: 'argumento': conversión de 'double' a 'GLclampf'; posible pérdida de datos
+C:\Users\alber\Desktop\PracticasPAG\src\Renderer.cpp(52,27): warning C4244: 'argumento': conversión de 'double' a 'GLclampf'; posible pérdida de datos
+  ShaderObject.cpp
+  ShaderProgram.cpp
+  Generando código...
+LINK : warning LNK4098: la biblioteca predeterminada'MSVCRT' entra en conflicto con otras bibliotecas; use la biblioteca /NODEFAULTLIB:biblioteca
+  Practicas-PAG.vcxproj -> C:\Users\alber\Desktop\PracticasPAG\Debug\Practicas-PAG.exe

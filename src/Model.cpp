@@ -48,6 +48,8 @@ PAG::Model::~Model()
 
 	delete shaderProgram;
 	delete material;
+
+	shaderProgram, material = nullptr;
 }
 
 PAG::Model::Model(const Model& other): vertex(other.vertex), index(other.index)

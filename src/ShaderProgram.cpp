@@ -97,6 +97,8 @@ PAG::ShaderProgram::~ShaderProgram()
 	delete fragmentShader;
 
 	glDeleteProgram(idSP);
+
+	vertexShader, fragmentShader = nullptr;
 }
 
 GLuint PAG::ShaderProgram::GetID()

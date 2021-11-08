@@ -67,13 +67,11 @@ void PAG::Renderer::Refresh()
 
 	if (activeModel != -1) {
 
-<<<<<<< HEAD
 		glUseProgram(model->GetIdSP());
 
 		// - Pasarle los uniforms —————————————
-=======
+
 		// Uniform matriz modelado y proyección
->>>>>>> 569d9c3026dbcb8c54f38a53aef454c830a403c1
 		std::string mModelViewProjName = "mModelViewProj";
 		glm::mat4 mModelViewProj = virtualCamera->GetModelViewProjMatrix();
 
@@ -85,8 +83,6 @@ void PAG::Renderer::Refresh()
 			std::cout << "Cannot find localization for: " << mModelViewProjName << std::endl;
 		}
 
-<<<<<<< HEAD
-=======
 		// Uniform color difuso del material
 		std::string IdName = "Id";
 		glm::vec3 Id = model->GetMaterial()->GetDiffuseColor();
@@ -99,9 +95,6 @@ void PAG::Renderer::Refresh()
 			std::cout << "Cannot find localization for: " << IdName << std::endl;
 		}
 
-		glUseProgram(model->GetIdSP());
-
->>>>>>> 569d9c3026dbcb8c54f38a53aef454c830a403c1
 		GLuint aux;
 
 		switch (activeRenderMode) {
