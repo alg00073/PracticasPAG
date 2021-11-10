@@ -68,6 +68,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	case GLFW_KEY_ENTER: // Reset the camera
 		std::cout << "Camara reseteada" << std::endl;
 		PAG::Renderer::Instance()->ResetCamera();
+		window_refresh_callback(window);
 		break;
 	case GLFW_KEY_P:
 		std::cout << "Movimiento actual: PAN" << std::endl;
