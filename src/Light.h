@@ -1,15 +1,6 @@
 #pragma once
 #include "glm/glm.hpp"
 
-#pragma region Include LightTypes
-
-#include "PointLight.h"
-#include "AmbientLight.h"
-#include "DirectionalLight.h"
-#include "SpotLight.h"
-
-#pragma endregion
-
 namespace PAG {
 
 	enum class LightType

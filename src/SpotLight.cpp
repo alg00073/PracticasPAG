@@ -1,6 +1,6 @@
 #include "SpotLight.h"
 
-SpotLight::SpotLight(glm::vec3 pos, glm::vec3 dir, glm::vec3 Id, glm::vec3 Is, float angle): Light(LightType::SPOT), 
+PAG::SpotLight::SpotLight(glm::vec3 pos, glm::vec3 dir, glm::vec3 Id, glm::vec3 Is, float angle): Light(PAG::LightType::SPOT), 
 position(pos), direction(dir), diffuseIntensity(Id), specularIntensity(Is), spotlightAngle(angle)
 {
 }

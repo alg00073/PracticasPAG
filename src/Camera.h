@@ -47,9 +47,7 @@ namespace PAG {
 		void SetWidth(int width);
 
 		void RecalculateCamera();
-
 		void ApplyMovement(double deltaX, double deltaY, MovementType type);
-
 		void Reset();
 	};
 }

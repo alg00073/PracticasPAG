@@ -5,15 +5,6 @@
 
 PAG::Model::Model(std::vector<Vertex> v, std::vector<GLuint> i) : vertex(v), index(i), shaderProgram(nullptr)
 {
-	// Material por defecto
-	glm::vec3 Ia(0.2, 0.0, 0.0); // Color ambiente
-	glm::vec3 Id(0.4, 0.4, 0.4); // Color difuso
-	glm::vec3 Is(1.0, 1.0, 1.0); // Color especular
-
-	float Ns = 16.0; // Exponente de phong (brillo)
-
-	material = new Material(Ia, Id, Is, Ns);
-
 	// VAO
 	glGenVertexArrays(1, &idVAO);
 	glBindVertexArray(idVAO);

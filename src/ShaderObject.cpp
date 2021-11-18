@@ -131,7 +131,7 @@ void PAG::ShaderObject::CheckShaderCompileStatus()
 			delete[] message_c_str;
 			message_c_str = nullptr;
 
-			throw std::runtime_error("ShaderObject::CheckShaderCompileStatus() -> Error al compilar Shader: " + message);
+			throw std::runtime_error("ShaderObject::CheckShaderCompileStatus() -> Error al compilar Shader " + fileName + ": " + message);
 		}
 	}
 }

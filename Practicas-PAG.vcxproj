@@ -118,6 +118,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(USERPROFILE)\Desktop\glwrappers\glfw-3.2.1.bin.WIN32\include;$(USERPROFILE)\Desktop\glwrappers\glew-2.1.0\include;$(USERPROFILE)\Desktop\glwrappers\glm-0.9.9.0\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -135,6 +136,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(USERPROFILE)\Desktop\glwrappers\glfw-3.2.1.bin.WIN32\include;$(USERPROFILE)\Desktop\glwrappers\glew-2.1.0\include;$(USERPROFILE)\Desktop\glwrappers\glm-0.9.9.0\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

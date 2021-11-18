@@ -13,6 +13,9 @@ void main ()
 {
 	gl_Position = mModelViewProj * vec4(vPosition, 1.0);
 
-	position = vec3( mModelView * vec4(vPosition, 1.0) );
-	normal = vec3( mModelView * vec4(vNormal, 1,0) );
+	vec4 position4v = mModelView * vec4(vPosition, 1.0);
+	vec4 normal4v = mModelView * vec4(vPosition, 1.0);
+
+	position = position4v.xyz;
+	normal = normal4v.xyz;
 }

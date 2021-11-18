@@ -1,4 +1,5 @@
 #pragma once
+
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -6,6 +7,10 @@
 #include "Model.h"
 #include "Camera.h"
 #include "Light.h"
+#include "AmbientLight.h"
+#include "PointLight.h"
+#include "DirectionalLight.h"
+#include "SpotLight.h"
 
 namespace PAG {
 
@@ -44,7 +49,6 @@ namespace PAG {
 		void SetClearColor(double* color);
 		void Refresh();
 		void Resize(int width, int height);
-		void EnableDepth();
 		void ShoutInfo();
 		void SwitchModel();
 		void DeleteModel();
