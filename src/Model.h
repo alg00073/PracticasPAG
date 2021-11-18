@@ -9,11 +9,11 @@ namespace PAG {
 	class Vertex {
 	public:
 		glm::vec3 position;
-		glm::vec3 color;
+		glm::vec3 normal;
 
-		Vertex(glm::vec3 p, glm::vec3 c) {
+		Vertex(glm::vec3 p, glm::vec3 n) {
 			position = p;
-			color = c;
+			normal = n;
 		}
 	};
 

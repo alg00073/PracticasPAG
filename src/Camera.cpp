@@ -25,6 +25,20 @@ glm::mat4 PAG::Camera::GetModelViewProjMatrix()
 	return projection * view;
 }
 
+glm::mat4 PAG::Camera::GetModelViewMatrix()
+{
+	try {
+		RecalculateCamera();
+	}
+	catch (std::exception& ex) {
+		throw std::runtime_error("Camera::GetModelViewMatrix() -> Error during calculating camera parameters: " + std::string(ex.what()));
+	}
+
+	glm::mat4 view = glm::lookAt(position, lookAt, v);
+
+	return view;
+}
+
 void PAG::Camera::SetHeight(int height)
 {
 	this->height = height;

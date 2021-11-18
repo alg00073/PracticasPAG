@@ -1,16 +1,17 @@
 #pragma once
 #include <iostream>
+#include <vector>
 #include <fstream>
 #include <sstream>
 #include "Model.h"
 #include "Camera.h"
+#include "Light.h"
 
 namespace PAG {
 
 	enum class RenderMode {
 		SOLID,
-		WIREFRAME,
-		RAINBOW
+		WIREFRAME
 	};
 
 	class Renderer
@@ -27,7 +28,9 @@ namespace PAG {
 		Model* model;
 
 		Camera* virtualCamera;
-		MovementType activeMovementType = PAG::MovementType::PAN;
+		MovementType activeMovementType = PAG::MovementType::ORBIT;
+
+		std::vector<Light*> sceneLights;
 
 		Renderer();
 		Model* CreateTriangle();
@@ -49,6 +52,10 @@ namespace PAG {
 		void ApplyCameraMovement(double deltaX, double deltaY);
 		void ResetCamera();
 		void ChangeRenderMode(PAG::RenderMode mode);
+
+		void SetUniform1f(std::string name, float data);
+		void SetUniform3fv(std::string name, glm::vec3 data);
+		void SetUniform4fm(std::string name, glm::mat4 data);
 	};
 }
 

@@ -41,6 +41,7 @@ namespace PAG {
 		Camera(glm::vec3 position, glm::vec3 lookAt, float fovX, float nearZ, float farZ, int height, int width);
 
 		glm::mat4 GetModelViewProjMatrix();
+		glm::mat4 GetModelViewMatrix();
 
 		void SetHeight(int height);
 		void SetWidth(int width);
