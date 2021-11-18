@@ -26,22 +26,22 @@ PAG::Renderer::Renderer()
 
 #pragma region Lights Parameters
 
-	glm::vec3 pointLightPosition(1, 1, 1);
+	glm::vec3 pointLightPosition(3, 3, 3);
 	glm::vec3 spotLightPosition(0.25, 0.25, -1);
 	glm::vec3 directionalLightDirection(0, 0, -1);
 
 	glm::vec3 spotLightDirection(0, 0, 1);
 	float spotlightAngle = 30;
 
-	glm::vec3 ambientIntensity(0.2, 0.2, 0.2);
+	glm::vec3 ambientIntensity(0.4, 0.4, 0.4);
 	glm::vec3 diffuseIntensity(0, 1, 0);
 	glm::vec3 specularIntensity(0, 0, 1);
 
 #pragma endregion
 
-	//sceneLights.push_back(new PointLight(pointLightPosition, diffuseIntensity, specularIntensity));
-	//sceneLights.push_back(new AmbientLight(ambientIntensity));
-	sceneLights.push_back(new DirectionalLight(directionalLightDirection, diffuseIntensity, specularIntensity));
+	sceneLights.push_back(new PointLight(pointLightPosition, diffuseIntensity, specularIntensity));
+	sceneLights.push_back(new AmbientLight(ambientIntensity));
+	//sceneLights.push_back(new DirectionalLight(directionalLightDirection, diffuseIntensity, specularIntensity));
 	//sceneLights.push_back(new SpotLight(spotLightPosition, spotLightDirection, diffuseIntensity, specularIntensity, spotlightAngle));
 }
 
@@ -96,45 +96,48 @@ void PAG::Renderer::Refresh()
 
 	if (activeModel != -1) {
 
-		glUseProgram(model->GetIdSP());
-
-#pragma region Common Uniforms
-
-		// Uniform matriz modelado, vision y proyección
-		std::string mModelViewProjName = "mModelViewProj";
-		glm::mat4 mModelViewProj = virtualCamera->GetModelViewProjMatrix();
-		SetUniform4fm(mModelViewProjName, mModelViewProj);
-
-		// Uniform matriz modelado y vision
-		std::string mModelViewName = "mModelView";
-		glm::mat4 mModelView = virtualCamera->GetModelViewMatrix();
-		SetUniform4fm(mModelViewName, mModelView);
-
-		// Uniform color ambiente del material
-		std::string KaName = "Ka";
-		glm::vec3 Ka = model->GetMaterial()->GetAmbientColor();
-		SetUniform3fv(KaName, Ka);
-
-		// Uniform color difuso del material
-		std::string KdName = "Kd";
-		glm::vec3 Kd = model->GetMaterial()->GetDiffuseColor();
-		SetUniform3fv(KdName, Kd);
-
-		// Uniform color especular del material
-		std::string KsName = "Ks";
-		glm::vec3 Ks = model->GetMaterial()->GetSpecularColor();
-		SetUniform3fv(KsName, Ks);
-
-		// Uniform para pasar el phongExponent del material
-		std::string phongExponentName = "phongExponent";
-		float phongExponent = model->GetMaterial()->GetPhongExponent();
-		SetUniform1f(phongExponentName, phongExponent);
-
-#pragma endregion
-
 		for (int i = 0; i < sceneLights.size(); i++) {
 
 			glBlendFunc(GL_SRC_ALPHA, i == 0 ? GL_ONE_MINUS_SRC_ALPHA : GL_ONE);
+
+			glUseProgram(model->GetIdSP());
+			glBindVertexArray(model->GetIdVAO());
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, model->GetIdIBO());
+			glPolygonMode(GL_FRONT_AND_BACK, activeRenderMode == RenderMode::SOLID ? GL_FILL : GL_LINE);
+
+#pragma region Common Uniforms
+
+			// Uniform matriz modelado, vision y proyección
+			std::string mModelViewProjName = "mModelViewProj";
+			glm::mat4 mModelViewProj = virtualCamera->GetModelViewProjMatrix();
+			SetUniform4fm(mModelViewProjName, mModelViewProj);
+
+			// Uniform matriz modelado y vision
+			std::string mModelViewName = "mModelView";
+			glm::mat4 mModelView = virtualCamera->GetModelViewMatrix();
+			SetUniform4fm(mModelViewName, mModelView);
+
+			// Uniform color ambiente del material
+			std::string KaName = "Ka";
+			glm::vec3 Ka = model->GetMaterial()->GetAmbientColor();
+			SetUniform3fv(KaName, Ka);
+
+			// Uniform color difuso del material
+			std::string KdName = "Kd";
+			glm::vec3 Kd = model->GetMaterial()->GetDiffuseColor();
+			SetUniform3fv(KdName, Kd);
+
+			// Uniform color especular del material
+			std::string KsName = "Ks";
+			glm::vec3 Ks = model->GetMaterial()->GetSpecularColor();
+			SetUniform3fv(KsName, Ks);
+
+			// Uniform para pasar el phongExponent del material
+			std::string phongExponentName = "phongExponent";
+			float phongExponent = model->GetMaterial()->GetPhongExponent();
+			SetUniform1f(phongExponentName, phongExponent);
+
+#pragma endregion
 
 #pragma region Light Uniforms
 
@@ -161,8 +164,8 @@ void PAG::Renderer::Refresh()
 				std::string IdName = "Id";
 				glm::vec3 Id = dynamic_cast<DirectionalLight*>(sceneLights[i])->GetDiffuse();
 
-				std::cout << dynamic_cast<DirectionalLight*>(sceneLights[i])->GetDiffuse().r << ", " 
-					<< dynamic_cast<DirectionalLight*>(sceneLights[i])->GetDiffuse().g << ", " 
+				std::cout << dynamic_cast<DirectionalLight*>(sceneLights[i])->GetDiffuse().r << ", "
+					<< dynamic_cast<DirectionalLight*>(sceneLights[i])->GetDiffuse().g << ", "
 					<< dynamic_cast<DirectionalLight*>(sceneLights[i])->GetDiffuse().b << ", " << std::endl;
 
 				SetUniform3fv(IdName, Id);
@@ -219,24 +222,18 @@ void PAG::Renderer::Refresh()
 
 				break;
 			}
-			default:
-				break;
 			}
 
 #pragma endregion
 
 #pragma region Subroutines
 
-			glPolygonMode(GL_FRONT_AND_BACK, activeRenderMode == RenderMode::SOLID ? GL_FILL : GL_LINE);
-
 			GLuint subroutineLocation = glGetSubroutineIndex(model->GetIdSP(), GL_FRAGMENT_SHADER, lightSubroutine.c_str());
 
 			glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &subroutineLocation);
 
 #pragma endregion
-
-			glBindVertexArray(model->GetIdVAO());
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, model->GetIdIBO());
+			
 			glDrawElements(GL_TRIANGLES, model->GetNumIndex(), GL_UNSIGNED_INT, nullptr);
 		}
 	}
@@ -357,7 +354,7 @@ PAG::Model* PAG::Renderer::CreateTriangle()
 	glm::vec3 v2 = { .5, -.5, 0.0 };
 	glm::vec3 v3 = { .0, .5, 0.0 };
 
-	glm::vec3 n1 = { 0.0, 0.0, -1.0 };
+	glm::vec3 n1 = { 0.0, 0.0, 1.0 };
 
 	std::vector<Vertex> vertex =
 	{
@@ -389,9 +386,9 @@ PAG::Model* PAG::Renderer::CreateTetrahedron()
 	glm::vec3 v3 = { 0.0, 0.0, 0.7 };
 	glm::vec3 v4 = { 0.0, 0.0, 0.0 };
 
-	glm::vec3 n1 = { -1.0, 0.0, 0.0 };
-	glm::vec3 n2 = { 0.0, -1.0, 0.0 };
-	glm::vec3 n3 = { 0.0, 0.0, -1.0 };
+	glm::vec3 n1 = { 1.0, 0.0, 0.0 };
+	glm::vec3 n2 = { 0.0, 1.0, 0.0 };
+	glm::vec3 n3 = { 0.0, 0.0, 1.0 };
 	glm::vec3 n4 = { 1.0, 1.0, 1.0 };
 	n4 = glm::normalize(n4);
 
@@ -420,7 +417,7 @@ PAG::Model* PAG::Renderer::CreateTetrahedron()
 	glm::vec3 Ia(0.9, 0.2, 0.2);
 	glm::vec3 Id(0.67, 0.16, 0.24);
 	glm::vec3 Is(0.9, 0.9, 0.9);
-	float Ns = 8.0;
+	float Ns = 128.0;
 
 	Model* tetrahedron = new Model(vertex, index);
 	Material* material = new Material(Ia, Id, Is, Ns);
