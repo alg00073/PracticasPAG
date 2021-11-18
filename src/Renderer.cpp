@@ -27,8 +27,8 @@ PAG::Renderer::Renderer()
 #pragma region Lights Parameters
 
 	glm::vec3 pointLightPosition(3, 3, 3);
-	glm::vec3 spotLightPosition(0.25, 0.25, -1);
-	glm::vec3 directionalLightDirection(0, 0, -1);
+	glm::vec3 spotLightPosition(3, 3, 3);
+	glm::vec3 directionalLightDirection(-1, -1, -1);
 
 	glm::vec3 spotLightDirection(0, 0, 1);
 	float spotlightAngle = 30;
@@ -39,10 +39,10 @@ PAG::Renderer::Renderer()
 
 #pragma endregion
 
-	sceneLights.push_back(new PointLight(pointLightPosition, diffuseIntensity, specularIntensity));
-	sceneLights.push_back(new AmbientLight(ambientIntensity));
+	//sceneLights.push_back(new PointLight(pointLightPosition, diffuseIntensity, specularIntensity));
+	//sceneLights.push_back(new AmbientLight(ambientIntensity));
 	//sceneLights.push_back(new DirectionalLight(directionalLightDirection, diffuseIntensity, specularIntensity));
-	//sceneLights.push_back(new SpotLight(spotLightPosition, spotLightDirection, diffuseIntensity, specularIntensity, spotlightAngle));
+	sceneLights.push_back(new SpotLight(spotLightPosition, spotLightDirection, diffuseIntensity, specularIntensity, spotlightAngle));
 }
 
 PAG::Renderer::~Renderer()
@@ -147,6 +147,8 @@ void PAG::Renderer::Refresh()
 			{
 			case PAG::LightType::AMBIENT: {
 
+				std::cout << "Ambientee" << std::endl;
+
 				std::string IaName = "Ia";
 				glm::vec3 Ia = dynamic_cast<AmbientLight*>(sceneLights[i])->GetAmbient();
 				SetUniform3fv(IaName, Ia);
@@ -197,6 +199,8 @@ void PAG::Renderer::Refresh()
 				break;
 			}
 			case PAG::LightType::SPOT: {
+
+				std::cout << "spoot" << std::endl;
 
 				std::string lightPositionName = "lightPosition";
 				glm::vec3 lightPosition = dynamic_cast<SpotLight*>(sceneLights[i])->GetPosition();
