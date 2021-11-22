@@ -71,7 +71,7 @@ vec3 spot()
 {
   vec3 l = normalize(lightPosition - position);
   vec3 d = lightDirection;
-  float cosGamma = cos(spotlightAngle * 180.0 / M_PI);
+  float cosGamma = cos(spotlightAngle * M_PI / 180.0);
   float spotlightFactor = 1.0;
 
   if (dot(-l, d) < cosGamma) { spotlightFactor = 0.0; }

@@ -26,23 +26,23 @@ PAG::Renderer::Renderer()
 
 #pragma region Lights Parameters
 
-	glm::vec3 pointLightPosition(3, 3, 3);
-	glm::vec3 spotLightPosition(3, 3, 3);
+	glm::vec3 pointLightPosition(-0.125, 0.275, 0.25);
+	glm::vec3 spotLightPosition(0.7, 0.7, 0.7);
 	glm::vec3 directionalLightDirection(-1, -1, -1);
 
-	glm::vec3 spotLightDirection(0, 0, 1);
-	float spotlightAngle = 30;
+	glm::vec3 spotLightDirection(-1, -1, -1);
+	float spotlightAngle = 15;
 
-	glm::vec3 ambientIntensity(0.4, 0.4, 0.4);
-	glm::vec3 diffuseIntensity(0, 1, 0);
-	glm::vec3 specularIntensity(0, 0, 1);
+	glm::vec3 ambientIntensity(0.2, 0.2, 0.2);
+	glm::vec3 diffuseIntensity(1, 1, 1);
+	glm::vec3 specularIntensity(1, 1, 1);
 
 #pragma endregion
 
 	//sceneLights.push_back(new PointLight(pointLightPosition, diffuseIntensity, specularIntensity));
 	//sceneLights.push_back(new AmbientLight(ambientIntensity));
 	//sceneLights.push_back(new DirectionalLight(directionalLightDirection, diffuseIntensity, specularIntensity));
-	sceneLights.push_back(new SpotLight(spotLightPosition, spotLightDirection, diffuseIntensity, specularIntensity, spotlightAngle));
+	sceneLights.push_back(new SpotLight(spotLightPosition, glm::normalize(spotLightDirection), diffuseIntensity, specularIntensity, spotlightAngle));
 }
 
 PAG::Renderer::~Renderer()
@@ -65,6 +65,7 @@ void PAG::Renderer::InitializeOpenGL()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_MULTISAMPLE);
 	glEnable(GL_BLEND);
+	glDepthFunc(GL_LEQUAL);
 }
 
 double* PAG::Renderer::GetClearColor()
@@ -147,8 +148,6 @@ void PAG::Renderer::Refresh()
 			{
 			case PAG::LightType::AMBIENT: {
 
-				std::cout << "Ambientee" << std::endl;
-
 				std::string IaName = "Ia";
 				glm::vec3 Ia = dynamic_cast<AmbientLight*>(sceneLights[i])->GetAmbient();
 				SetUniform3fv(IaName, Ia);
@@ -161,14 +160,12 @@ void PAG::Renderer::Refresh()
 
 				std::string lightDirectionName = "lightDirection";
 				glm::vec3 lightDirection = dynamic_cast<DirectionalLight*>(sceneLights[i])->GetDirection();
-				SetUniform3fv(lightDirectionName, lightDirection);
+				glm::vec4 lightDirectionView = glm::transpose(glm::inverse(mModelView)) * glm::vec4(lightDirection, 0.0);
+
+				SetUniform3fv(lightDirectionName, glm::vec3(lightDirectionView));
 
 				std::string IdName = "Id";
 				glm::vec3 Id = dynamic_cast<DirectionalLight*>(sceneLights[i])->GetDiffuse();
-
-				std::cout << dynamic_cast<DirectionalLight*>(sceneLights[i])->GetDiffuse().r << ", "
-					<< dynamic_cast<DirectionalLight*>(sceneLights[i])->GetDiffuse().g << ", "
-					<< dynamic_cast<DirectionalLight*>(sceneLights[i])->GetDiffuse().b << ", " << std::endl;
 
 				SetUniform3fv(IdName, Id);
 
@@ -184,7 +181,9 @@ void PAG::Renderer::Refresh()
 
 				std::string lightPositionName = "lightPosition";
 				glm::vec3 lightPosition = dynamic_cast<PointLight*>(sceneLights[i])->GetPosition();
-				SetUniform3fv(lightPositionName, lightPosition);
+				glm::vec4 lightPositionView = mModelView * glm::vec4(lightPosition, 1.0);
+
+				SetUniform3fv(lightPositionName, glm::vec3(lightPositionView));
 
 				std::string IdName = "Id";
 				glm::vec3 Id = dynamic_cast<PointLight*>(sceneLights[i])->GetDiffuse();
@@ -200,15 +199,17 @@ void PAG::Renderer::Refresh()
 			}
 			case PAG::LightType::SPOT: {
 
-				std::cout << "spoot" << std::endl;
-
 				std::string lightPositionName = "lightPosition";
 				glm::vec3 lightPosition = dynamic_cast<SpotLight*>(sceneLights[i])->GetPosition();
-				SetUniform3fv(lightPositionName, lightPosition);
+				glm::vec4 lightPositionView = mModelView * glm::vec4(lightPosition, 1.0);
+
+				SetUniform3fv(lightPositionName, glm::vec3(lightPositionView));
 
 				std::string lightDirectionName = "lightDirection";
 				glm::vec3 lightDirection = dynamic_cast<SpotLight*>(sceneLights[i])->GetDirection();
-				SetUniform3fv(lightDirectionName, lightDirection);
+				glm::vec4 lightDirectionView = glm::transpose(glm::inverse(mModelView)) * glm::vec4(lightDirection, 0.0);
+
+				SetUniform3fv(lightDirectionName, glm::vec3(lightDirectionView));
 
 				std::string spotLightAngleName = "spotlightAngle";
 				float spotLightAngle = dynamic_cast<SpotLight*>(sceneLights[i])->GetSpotlightAngle();
@@ -390,9 +391,9 @@ PAG::Model* PAG::Renderer::CreateTetrahedron()
 	glm::vec3 v3 = { 0.0, 0.0, 0.7 };
 	glm::vec3 v4 = { 0.0, 0.0, 0.0 };
 
-	glm::vec3 n1 = { 1.0, 0.0, 0.0 };
-	glm::vec3 n2 = { 0.0, 1.0, 0.0 };
-	glm::vec3 n3 = { 0.0, 0.0, 1.0 };
+	glm::vec3 n1 = { -1.0, 0.0, 0.0 };
+	glm::vec3 n2 = { 0.0, -1.0, 0.0 };
+	glm::vec3 n3 = { 0.0, 0.0, -1.0 };
 	glm::vec3 n4 = { 1.0, 1.0, 1.0 };
 	n4 = glm::normalize(n4);
 
@@ -418,10 +419,10 @@ PAG::Model* PAG::Renderer::CreateTetrahedron()
 
 	std::vector<GLuint> index = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
 
-	glm::vec3 Ia(0.9, 0.2, 0.2);
-	glm::vec3 Id(0.67, 0.16, 0.24);
-	glm::vec3 Is(0.9, 0.9, 0.9);
-	float Ns = 128.0;
+	glm::vec3 Ia(0.35, 0.1, 0.05);
+	glm::vec3 Id(0.7, 0.2, 0.1);
+	glm::vec3 Is(1, 1, 1);
+	float Ns = 5.0;
 
 	Model* tetrahedron = new Model(vertex, index);
 	Material* material = new Material(Ia, Id, Is, Ns);

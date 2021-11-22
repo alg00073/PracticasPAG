@@ -19,7 +19,7 @@ void window_refresh_callback(GLFWwindow* window)
 	// que se mostraba hasta ahora front. Debe ser la última orden de
 	// este callback
 	glfwSwapBuffers(window);
-	std::cout << "Refresh callback called" << std::endl;
+	//std::cout << "Refresh callback called" << std::endl;
 }
 // - Esta función callback será llamada cada vez que se cambie el tamaño
 // del área de dibujo OpenGL.
