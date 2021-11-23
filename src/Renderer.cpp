@@ -28,20 +28,20 @@ PAG::Renderer::Renderer()
 
 	glm::vec3 pointLightPosition(-0.125, 0.275, 0.25);
 	glm::vec3 spotLightPosition(0.7, 0.7, 0.7);
-	glm::vec3 directionalLightDirection(-1, -1, -1);
+	glm::vec3 directionalLightDirection(0, 1, 1);
 
 	glm::vec3 spotLightDirection(-1, -1, -1);
 	float spotlightAngle = 15;
 
-	glm::vec3 ambientIntensity(0.2, 0.2, 0.2);
+	glm::vec3 ambientIntensity(0.5, 0.5, 0.5);
 	glm::vec3 diffuseIntensity(1, 1, 1);
 	glm::vec3 specularIntensity(1, 1, 1);
 
 #pragma endregion
 
-	//sceneLights.push_back(new PointLight(pointLightPosition, diffuseIntensity, specularIntensity));
-	//sceneLights.push_back(new AmbientLight(ambientIntensity));
-	//sceneLights.push_back(new DirectionalLight(directionalLightDirection, diffuseIntensity, specularIntensity));
+	sceneLights.push_back(new PointLight(pointLightPosition, diffuseIntensity, specularIntensity));
+	sceneLights.push_back(new AmbientLight(ambientIntensity));
+	sceneLights.push_back(new DirectionalLight(glm::normalize(directionalLightDirection), diffuseIntensity, specularIntensity));
 	sceneLights.push_back(new SpotLight(spotLightPosition, glm::normalize(spotLightDirection), diffuseIntensity, specularIntensity, spotlightAngle));
 }
 
@@ -419,7 +419,7 @@ PAG::Model* PAG::Renderer::CreateTetrahedron()
 
 	std::vector<GLuint> index = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
 
-	glm::vec3 Ia(0.35, 0.1, 0.05);
+	glm::vec3 Ia(0.6, 0.2, 0.3);
 	glm::vec3 Id(0.7, 0.2, 0.1);
 	glm::vec3 Is(1, 1, 1);
 	float Ns = 5.0;
