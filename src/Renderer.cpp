@@ -231,13 +231,7 @@ void PAG::Renderer::Refresh()
 
 #pragma endregion
 
-#pragma region Subroutines
-
-			GLuint subroutineLocation = glGetSubroutineIndex(model->GetIdSP(), GL_FRAGMENT_SHADER, lightSubroutine.c_str());
-
-			glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &subroutineLocation);
-
-#pragma endregion
+			SetSubroutineUniform(lightSubroutine);
 			
 			glDrawElements(GL_TRIANGLES, model->GetNumIndex(), GL_UNSIGNED_INT, nullptr);
 		}
@@ -327,7 +321,7 @@ void PAG::Renderer::SetUniform1f(std::string name, float data)
 		glUniform1f(location, data);
 	}
 	else {
-		std::cout << "SetUniform1f(): Cannot find localization for: " << name << std::endl;
+		throw std::runtime_error("SetUniform1f(): Cannot find localization for: " + name);
 	}
 }
 
@@ -338,7 +332,7 @@ void PAG::Renderer::SetUniform3fv(std::string name, glm::vec3 data)
 		glUniform3fv(location, 1, &data[0]);
 	}
 	else {
-		std::cout << "SetUniform3fv(): Cannot find localization for: " << name << std::endl;
+		throw std::runtime_error("SetUniform3fv(): Cannot find localization for: " + name);
 	}
 }
 
@@ -349,7 +343,19 @@ void PAG::Renderer::SetUniform4fm(std::string name, glm::mat4 data)
 		glUniformMatrix4fv(location, 1, GL_FALSE, &data[0][0]);
 	}
 	else {
-		std::cout << "SetUniform4fm(): Cannot find localization for: " << name << std::endl;
+		throw std::runtime_error("SetUniform4fm(): Cannot find localization for: " + name);
+	}
+}
+
+void PAG::Renderer::SetSubroutineUniform(std::string name)
+{
+	GLuint subroutineLocation = glGetSubroutineIndex(model->GetIdSP(), GL_FRAGMENT_SHADER, name.c_str());
+
+	if (subroutineLocation != -1) {
+		glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &subroutineLocation);
+	}
+	else {
+		throw std::runtime_error("SetSubroutineUniform(): Cannot find localization for: " + subroutineLocation);
 	}
 }
 

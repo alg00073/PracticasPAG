@@ -60,6 +60,7 @@ namespace PAG {
 		void SetUniform1f(std::string name, float data);
 		void SetUniform3fv(std::string name, glm::vec3 data);
 		void SetUniform4fm(std::string name, glm::mat4 data);
+		void SetSubroutineUniform(std::string name);
 	};
 }
 
