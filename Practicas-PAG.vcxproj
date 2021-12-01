@@ -23,6 +23,7 @@
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\DirectionalLight.h" />
     <ClInclude Include="src\Light.h" />
+    <ClInclude Include="src\lodepng.h" />
     <ClInclude Include="src\Material.h" />
     <ClInclude Include="src\Model.h" />
     <ClInclude Include="src\PointLight.h" />
@@ -36,6 +37,7 @@
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\DirectionalLight.cpp" />
     <ClCompile Include="src\Light.cpp" />
+    <ClCompile Include="src\lodepng.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Material.cpp" />
     <ClCompile Include="src\Model.cpp" />
@@ -117,14 +119,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(USERPROFILE)\Desktop\glwrappers\glfw-3.2.1.bin.WIN32\include;$(USERPROFILE)\Desktop\glwrappers\glew-2.1.0\include;$(USERPROFILE)\Desktop\glwrappers\glm-0.9.9.0\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(USERPROFILE)\Desktop\assimp;$(USERPROFILE)\Desktop\glwrappers\glfw-3.3.4.bin.WIN32\include;$(USERPROFILE)\Desktop\glwrappers\glew-2.1.0\include;$(USERPROFILE)\Desktop\glwrappers\glm-0.9.9.0\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(USERPROFILE)\Desktop\glwrappers\glfw-3.2.1.bin.WIN32\lib-vc2015;$(USERPROFILE)\Desktop\glwrappers\glew-2.1.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(USERPROFILE)\Desktop\glwrappers\glfw-3.2.1.bin.WIN32\lib-vc2015;$(USERPROFILE)\Desktop\glwrappers\glew-2.1.0\lib\Release\Win32;$(USERPROFILE)\Desktop\assimp;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32.lib;glfw3.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -135,7 +137,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(USERPROFILE)\Desktop\glwrappers\glfw-3.2.1.bin.WIN32\include;$(USERPROFILE)\Desktop\glwrappers\glew-2.1.0\include;$(USERPROFILE)\Desktop\glwrappers\glm-0.9.9.0\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(USERPROFILE)\Desktop\assimp;$(USERPROFILE)\Desktop\glwrappers\glfw-3.3.4.bin.WIN32\include;$(USERPROFILE)\Desktop\glwrappers\glew-2.1.0\include;$(USERPROFILE)\Desktop\glwrappers\glm-0.9.9.0\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -143,8 +145,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(USERPROFILE)\Desktop\glwrappers\glfw-3.2.1.bin.WIN32\lib-vc2015;$(USERPROFILE)\Desktop\glwrappers\glew-2.1.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(USERPROFILE)\Desktop\glwrappers\glfw-3.2.1.bin.WIN32\lib-vc2015;$(USERPROFILE)\Desktop\glwrappers\glew-2.1.0\lib\Release\Win32;$(USERPROFILE)\Desktop\assimp;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32.lib;glfw3.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -153,10 +155,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(USERPROFILE)\Desktop\glwrappers\glfw-3.3.4.bin.WIN32\include;$(USERPROFILE)\Desktop\glwrappers\glew-2.1.0\include;$(USERPROFILE)\Desktop\glwrappers\glm-0.9.9.0\glm;$(USERPROFILE)\Desktop\assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(USERPROFILE)\Desktop\glwrappers\glfw-3.3.4.bin.WIN32\lib-vc2019;$(USERPROFILE)\Desktop\glwrappers\glew-2.1.0\lib\Release\x64;$(USERPROFILE)\Desktop\assimp;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32.lib;glfw3.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -167,12 +172,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(USERPROFILE)\Desktop\glwrappers\glfw-3.3.4.bin.WIN32\include;$(USERPROFILE)\Desktop\glwrappers\glew-2.1.0\include;$(USERPROFILE)\Desktop\glwrappers\glm-0.9.9.0\glm;$(USERPROFILE)\Desktop\assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(USERPROFILE)\Desktop\glwrappers\glfw-3.3.4.bin.WIN32\lib-vc2019;$(USERPROFILE)\Desktop\glwrappers\glew-2.1.0\lib\Release\x64;$(USERPROFILE)\Desktop\assimp;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32.lib;glfw3.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

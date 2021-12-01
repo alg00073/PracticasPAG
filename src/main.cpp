@@ -40,9 +40,13 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	case GLFW_KEY_ESCAPE:
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 		break;
+	case GLFW_KEY_TAB:
+		std::cout << "Modelo activo cambiado: " << PAG::Renderer::Instance()->SwitchModel() << std::endl;
+		window_refresh_callback(window);
+		break;
 	case GLFW_KEY_A:
-		std::cout << "Modelo cambiado" << std::endl;
-		PAG::Renderer::Instance()->SwitchModel();
+		std::cout << "Modelo añadido" << std::endl;
+		PAG::Renderer::Instance()->AddModel();
 		window_refresh_callback(window);
 		break;
 	case GLFW_KEY_B:

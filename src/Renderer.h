@@ -30,7 +30,7 @@ namespace PAG {
 		double clearColor[4] = { 0.6, 0.6, 0.6, 1 };
 
 		int activeModel = 0;
-		Model* model;
+		std::vector<Model*> models;
 
 		Camera* virtualCamera;
 		MovementType activeMovementType = PAG::MovementType::ORBIT;
@@ -40,6 +40,7 @@ namespace PAG {
 		Renderer();
 		Model* CreateTriangle();
 		Model* CreateTetrahedron();
+		Model* CreateModel(std::string path);
 
 	public:
 		virtual ~Renderer();
@@ -50,7 +51,8 @@ namespace PAG {
 		void Refresh();
 		void Resize(int width, int height);
 		void ShoutInfo();
-		void SwitchModel();
+		int SwitchModel();
+		void AddModel();
 		void DeleteModel();
 		void ChangeCameraMovement(PAG::MovementType type);
 		void ApplyCameraMovement(double deltaX, double deltaY);
