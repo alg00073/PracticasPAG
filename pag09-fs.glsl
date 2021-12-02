@@ -20,16 +20,19 @@ uniform vec3 lightPosition;
 uniform vec3 lightDirection;
 uniform float spotlightAngle;
 
-uniform sampler2D tex;
+uniform sampler2D textureSampler;
 
 layout (location = 0) out vec4 fragColor;
 
-subroutine vec3 calculateLight();
+subroutine vec3 calculateLight(vec3 colorKa, vec3 colorKd);
 subroutine uniform calculateLight lightType;
+
+subroutine vec4 chooseColor();
+subroutine uniform chooseColor colorType;
 
 void main ()
 {
-  fragColor = vec4( colorType(), 1.0 );
+  fragColor = colorType();
 }
 
 subroutine(calculateLight)
@@ -89,24 +92,21 @@ vec3 spot(vec3 colorKa, vec3 colorKd)
   return (diffuse + specular) * spotlightFactor;
 }
 
-subroutine vec4 chooseColor();
-subroutine uniform chooseColor colorType;
-
 subroutine (chooseColor)
-vec4 wireframe()
+vec4 wireframeColor()
 {
   return vec4(0, 1, 0, 1);
 }
 
 subroutine (chooseColor)
-vec4 material()
+vec4 materialColor()
 {
   return vec4( lightType(Ka, Kd), 1.0 );
 }
 
 subroutine (chooseColor)
-vec4 texture()
+vec4 textureColor()
 {
-  vec4 color = texture(texture, texCoord);
+  vec4 color = texture(textureSampler, texCoord);
   return vec4( lightType(color.rgb, color.rgb), 1.0 );
 }

@@ -1,8 +1,5 @@
 #include "Texture.h"
 
-#include <GL/glew.h> // En algunos casos, este include se puede omitir
-#include <GL/gl.h>
-
 PAG::Texture::Texture(std::string texturePath) : width(0), height(0), image(std::vector<unsigned char>()), id(0)
 {
 	try {

@@ -244,19 +244,19 @@ void PAG::Renderer::Refresh()
 
 					switch (models[i]->GetRenderMode()) {
 					case RenderMode::SOLID: {
-						renderSubroutine = "material";
+						renderSubroutine = "materialColor";
 						glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 						break;
 					}
 					case RenderMode::TEXTURE: {
-						renderSubroutine = "texture";
-						shaderProgramToUse->SetUniformSampler2D("texture", 0);
+						renderSubroutine = "textureColor";
+						shaderProgramToUse->SetUniformSampler2D("textureSampler", 0);
 						models[i]->GetMaterial()->GetTexture()->ActivateTexture(0);
 						glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 						break;
 					}
 					case RenderMode::WIREFRAME: {
-						renderSubroutine = "wireframe";
+						renderSubroutine = "wireframeColor";
 						glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 						break;
 					}
@@ -319,8 +319,13 @@ void PAG::Renderer::AddModel()
 		models.push_back(new Model(PAG::ModelType::TETRAHEDRON, material));
 		break;
 	case 2:
-		material->SetTexture(new Texture(".\\textures\\dado.png"));
-		models.push_back(new Model(".\\models\\dado.obj", material));
+		try {
+			material->SetTexture(new Texture(".\\textures\\dado.png"));
+			models.push_back(new Model(".\\models\\dado.obj", material));
+		}
+		catch (std::exception& ex) {
+			std::cout << "AddModel() -> " + (std::string)ex.what() << std::endl;
+		}
 		break;
 	case 3:
 		material->SetTexture(new Texture(".\\textures\\spot_texture.png"));

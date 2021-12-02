@@ -1,5 +1,8 @@
 #pragma once
 
+#include <GL/glew.h> // En algunos casos, este include se puede omitir
+#include <GL/gl.h>
+
 #include <iostream>
 #include "lodepng.h"
 
