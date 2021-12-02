@@ -277,9 +277,16 @@ int PAG::Renderer::SwitchModel()
 
 void PAG::Renderer::AddModel()
 {
+	glm::vec3 Ia(0.6, 0.2, 0.3);
+	glm::vec3 Id(0.7, 0.2, 0.1);
+	glm::vec3 Is(1, 1, 1);
+	float Ns = 5.0;
+
+	Material* material = new Material(Ia, Id, Is, Ns);
+
 	switch (models.size()) {
 	case 0:
-		models.push_back(CreateTriangle());
+		models.push_back(new Model(PAG::ModelType::TRIANGLE, material));
 		break;
 	case 1:
 		models.push_back(CreateTetrahedron());

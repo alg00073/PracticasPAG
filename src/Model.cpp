@@ -5,14 +5,79 @@
 
 #include <iostream>
 
-PAG::Model::Model(std::vector<Vertex> v, std::vector<GLuint> i) : vertex(v), index(i), shaderProgram(nullptr)
+PAG::Model::Model(ModelType type, Material* material = nullptr) : shaderProgram(nullptr), modelType(type), material(material)
 {
+	switch (type) {
+	case ModelType::TRIANGLE: {
+
+		glm::vec3 v1 = { -.5, -.5, 0.0 };
+		glm::vec3 v2 = { .5, -.5, 0.0 };
+		glm::vec3 v3 = { .0, .5, 0.0 };
+
+		glm::vec3 n1 = { 0.0, 0.0, 1.0 };
+
+		std::vector<Vertex> vertex =
+		{
+			Vertex(v1, n1),
+			Vertex(v2, n1),
+			Vertex(v3, n1)
+		};
+
+		std::vector<GLuint> index = { 0, 1, 2 };
+
+		this->vertex = vertex;
+		this->index = index;
+
+		break;
+	}
+	case ModelType::TETRAHEDRON: {
+
+		glm::vec3 v1 = { 0.7, 0.0, 0.0 };
+		glm::vec3 v2 = { 0.0, 0.7, 0.0 };
+		glm::vec3 v3 = { 0.0, 0.0, 0.7 };
+		glm::vec3 v4 = { 0.0, 0.0, 0.0 };
+
+		glm::vec3 n1 = { -1.0, 0.0, 0.0 };
+		glm::vec3 n2 = { 0.0, -1.0, 0.0 };
+		glm::vec3 n3 = { 0.0, 0.0, -1.0 };
+		glm::vec3 n4 = { 1.0, 1.0, 1.0 };
+		n4 = glm::normalize(n4);
+
+		std::vector<Vertex> vertex =
+		{
+			// Triángulo 1 (0, 1, 2)
+			Vertex(v1, n4),
+			Vertex(v2, n4),
+			Vertex(v3, n4),
+			// Triángulo 2 (1, 0, 3)
+			Vertex(v2, n3),
+			Vertex(v1, n3),
+			Vertex(v4, n3),
+			// Triángulo 3 (2, 1, 3)
+			Vertex(v3, n1),
+			Vertex(v2, n1),
+			Vertex(v4, n1),
+			// Triángulo 4 (3, 0, 2)
+			Vertex(v4, n2),
+			Vertex(v1, n2),
+			Vertex(v3, n2),
+		};
+
+		std::vector<GLuint> index = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
+
+		this->vertex = vertex;
+		this->index = index;
+
+		break;
+	}
+	}
+
 	GenerateVAO();
 	GenerateVBO();
 	GenerateIBO();
 }
 
-PAG::Model::Model(const char* path): shaderProgram(nullptr)
+PAG::Model::Model(const char* path, Material* material = nullptr) : shaderProgram(nullptr), modelType(ModelType::OBJ), material(material)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenSmoothNormals);
@@ -44,7 +109,7 @@ PAG::Model::~Model()
 	shaderProgram, material = nullptr;
 }
 
-PAG::Model::Model(const Model& other): vertex(other.vertex), index(other.index)
+PAG::Model::Model(const Model& other) : vertex(other.vertex), index(other.index)
 {
 	shaderProgram = new ShaderProgram(*other.shaderProgram);
 	material = new Material(*other.material);
@@ -156,13 +221,18 @@ void PAG::Model::GenerateVBO()
 	glGenBuffers(1, &idVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, idVBO);
 
-	// Atributo 1
+	// Atributo 1: Posición
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLubyte*)0);
 
-	// Atributo 2
+	// Atributo 2: Normales
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLubyte*)0 + offsetof(Vertex, normal));
+
+	// Atributo 3: Coordenadas de textura
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLubyte*)0 + offsetof(Vertex, texCoord));
+
 	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertex.size(), vertex.data(), GL_STATIC_DRAW);
 }
 

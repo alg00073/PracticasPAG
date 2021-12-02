@@ -28,15 +28,23 @@ namespace PAG {
 		}
 	};
 
+	enum class ModelType
+	{
+		TRIANGLE,
+		TETRAHEDRON,
+		OBJ
+	};
+
 	class Model
 	{
 	private:
+
+		ModelType modelType;
 
 		std::vector<Vertex> vertex;
 		std::vector<GLuint> index;
 
 		ShaderProgram* shaderProgram;
-
 		Material* material;
 
 		GLuint idSP = 0; // Identificador del shader program
@@ -52,8 +60,8 @@ namespace PAG {
 
 	public:
 
-		Model(std::vector<Vertex> v, std::vector<GLuint> i);
-		Model(const char* path);
+		Model(ModelType type, Material* material = nullptr);
+		Model(const char* path, Material* material = nullptr);
 
 		Model(const Model& other);
 		virtual ~Model();
