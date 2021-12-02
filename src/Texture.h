@@ -1,9 +1,7 @@
 #pragma once
 
-#include <vector>
-#include <string>
-
-#include "src/lodepng.h"
+#include <iostream>
+#include "lodepng.h"
 
 namespace PAG {
 	class Texture
@@ -17,11 +15,9 @@ namespace PAG {
 		void Load(std::string texturePath);
 
 	public:
+
 		Texture(std::string texturePath);
-
 		~Texture();
-
-		static Texture* CreateTexture(std::string texturePath);
 
 		GLuint GetID();
 

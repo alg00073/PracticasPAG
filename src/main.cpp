@@ -41,7 +41,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 		break;
 	case GLFW_KEY_TAB:
-		std::cout << "Modelo activo cambiado: " << PAG::Renderer::Instance()->SwitchModel() << std::endl;
+		std::cout << "Modelo activo cambiado: " << PAG::Renderer::Instance()->SwitchActiveModel() << std::endl;
 		window_refresh_callback(window);
 		break;
 	case GLFW_KEY_A:
@@ -54,14 +54,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		PAG::Renderer::Instance()->DeleteModel();
 		window_refresh_callback(window);
 		break;
-	case GLFW_KEY_W:
-		std::cout << "Cambiado modo de render a: WIREFRAME" << std::endl;
-		PAG::Renderer::Instance()->ChangeRenderMode(PAG::RenderMode::WIREFRAME);
-		window_refresh_callback(window);
-		break;
-	case GLFW_KEY_S:
-		std::cout << "Cambiado modo de render a: SOLID" << std::endl;
-		PAG::Renderer::Instance()->ChangeRenderMode(PAG::RenderMode::SOLID);
+	case GLFW_KEY_SPACE:
+		std::cout << "Cambiado modo de render" << std::endl;
+		PAG::Renderer::Instance()->SwitchRenderMode();
 		window_refresh_callback(window);
 		break;
 	case GLFW_KEY_ENTER: // Reset the camera

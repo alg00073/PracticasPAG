@@ -14,18 +14,11 @@
 
 namespace PAG {
 
-	enum class RenderMode {
-		SOLID,
-		WIREFRAME
-	};
-
 	class Renderer
 	{
 
 	private:
 		static Renderer* instance;
-
-		RenderMode activeRenderMode = PAG::RenderMode::SOLID;
 
 		double clearColor[4] = { 0.6, 0.6, 0.6, 1 };
 
@@ -38,9 +31,6 @@ namespace PAG {
 		std::vector<Light*> sceneLights;
 
 		Renderer();
-		Model* CreateTriangle();
-		Model* CreateTetrahedron();
-		Model* CreateModel(std::string path);
 
 	public:
 		virtual ~Renderer();
@@ -51,18 +41,13 @@ namespace PAG {
 		void Refresh();
 		void Resize(int width, int height);
 		void ShoutInfo();
-		int SwitchModel();
+		int SwitchActiveModel();
 		void AddModel();
 		void DeleteModel();
 		void ChangeCameraMovement(PAG::MovementType type);
 		void ApplyCameraMovement(double deltaX, double deltaY);
 		void ResetCamera();
-		void ChangeRenderMode(PAG::RenderMode mode);
-
-		void SetUniform1f(std::string name, float data);
-		void SetUniform3fv(std::string name, glm::vec3 data);
-		void SetUniform4fm(std::string name, glm::mat4 data);
-		void SetSubroutineUniform(std::string name);
+		void SwitchRenderMode();
 	};
 }
 

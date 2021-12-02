@@ -35,11 +35,18 @@ namespace PAG {
 		OBJ
 	};
 
+	enum class RenderMode {
+		SOLID,
+		WIREFRAME,
+		TEXTURE
+	};
+
 	class Model
 	{
 	private:
 
 		ModelType modelType;
+		RenderMode renderMode = RenderMode::SOLID;
 
 		std::vector<Vertex> vertex;
 		std::vector<GLuint> index;
@@ -47,7 +54,6 @@ namespace PAG {
 		ShaderProgram* shaderProgram;
 		Material* material;
 
-		GLuint idSP = 0; // Identificador del shader program
 		GLuint idVAO = 0; // Identificador del vertex array object
 		GLuint idVBO = 0; // Identificador del vertex buffer object
 		GLuint idIBO = 0; // Identificador del index buffer object
@@ -60,20 +66,23 @@ namespace PAG {
 
 	public:
 
-		Model(ModelType type, Material* material = nullptr);
-		Model(const char* path, Material* material = nullptr);
+		Model(ModelType type, Material* material);
+		Model(const char* path, Material* material);
 
 		Model(const Model& other);
 		virtual ~Model();
 
 		void AssignShaderProgram(std::string vertexShader, std::string fragmentShader);
+		ShaderProgram* GetShaderProgram();
 
-		GLuint GetIdSP();
 		GLuint GetIdVAO();
 		GLuint GetIdVBO();
 		GLuint GetIdIBO();
 
 		int GetNumIndex();
+
+		void SetRenderMode(RenderMode mode);
+		RenderMode GetRenderMode();
 
 		void SetMaterial(Material* material);
 		Material* GetMaterial();

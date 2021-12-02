@@ -2,7 +2,6 @@
 
 #include <GL/glew.h> // En algunos casos, este include se puede omitir
 #include <GL/gl.h>
-#include <iostream>
 
 PAG::Texture::Texture(std::string texturePath) : width(0), height(0), image(std::vector<unsigned char>()), id(0)
 {
@@ -17,12 +16,6 @@ PAG::Texture::Texture(std::string texturePath) : width(0), height(0), image(std:
 PAG::Texture::~Texture()
 {
 	glDeleteTextures(1, &id);
-}
-
-PAG::Texture* PAG::Texture::CreateTexture(std::string texturePath)
-{
-	Texture* texture = new Texture(texturePath);
-	return texture;
 }
 
 GLuint PAG::Texture::GetID()

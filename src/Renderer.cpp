@@ -7,7 +7,7 @@ PAG::Renderer* PAG::Renderer::instance = nullptr;
 
 PAG::Renderer::Renderer()
 {
-	models.push_back(CreateTriangle());
+	AddModel();
 
 #pragma region Camera Parameters
 
@@ -105,42 +105,47 @@ void PAG::Renderer::Refresh()
 
 					glBlendFunc(GL_SRC_ALPHA, j == 0 ? GL_ONE_MINUS_SRC_ALPHA : GL_ONE);
 
-					glUseProgram(models[i]->GetIdSP());
+					ShaderProgram* shaderProgramToUse = models[i]->GetShaderProgram();
+
+					glUseProgram(shaderProgramToUse->GetID());
 					glBindVertexArray(models[i]->GetIdVAO());
 					glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, models[i]->GetIdIBO());
-					glPolygonMode(GL_FRONT_AND_BACK, activeRenderMode == RenderMode::SOLID ? GL_FILL : GL_LINE);
 
 #pragma region Common Uniforms
 
 					// Uniform matriz modelado, vision y proyección
 					std::string mModelViewProjName = "mModelViewProj";
 					glm::mat4 mModelViewProj = virtualCamera->GetModelViewProjMatrix();
-					SetUniform4fm(mModelViewProjName, mModelViewProj);
+					shaderProgramToUse->SetUniform4fm(mModelViewProjName, mModelViewProj);
 
 					// Uniform matriz modelado y vision
 					std::string mModelViewName = "mModelView";
 					glm::mat4 mModelView = virtualCamera->GetModelViewMatrix();
-					SetUniform4fm(mModelViewName, mModelView);
+					shaderProgramToUse->SetUniform4fm(mModelViewName, mModelView);
+
+					// Uniform matriz modelado y vision (inversa de la traspuesta)
+					std::string mModelViewITName = "mModelViewIT";
+					shaderProgramToUse->SetUniform4fm(mModelViewITName, glm::inverse(glm::transpose(mModelView)));
 
 					// Uniform color ambiente del material
 					std::string KaName = "Ka";
 					glm::vec3 Ka = models[i]->GetMaterial()->GetAmbientColor();
-					SetUniform3fv(KaName, Ka);
+					shaderProgramToUse->SetUniform3fv(KaName, Ka);
 
 					// Uniform color difuso del material
 					std::string KdName = "Kd";
 					glm::vec3 Kd = models[i]->GetMaterial()->GetDiffuseColor();
-					SetUniform3fv(KdName, Kd);
+					shaderProgramToUse->SetUniform3fv(KdName, Kd);
 
 					// Uniform color especular del material
 					std::string KsName = "Ks";
 					glm::vec3 Ks = models[i]->GetMaterial()->GetSpecularColor();
-					SetUniform3fv(KsName, Ks);
+					shaderProgramToUse->SetUniform3fv(KsName, Ks);
 
 					// Uniform para pasar el phongExponent del material
 					std::string phongExponentName = "phongExponent";
 					float phongExponent = models[i]->GetMaterial()->GetPhongExponent();
-					SetUniform1f(phongExponentName, phongExponent);
+					shaderProgramToUse->SetUniform1f(phongExponentName, phongExponent);
 
 #pragma endregion
 
@@ -154,7 +159,7 @@ void PAG::Renderer::Refresh()
 
 						std::string IaName = "Ia";
 						glm::vec3 Ia = dynamic_cast<AmbientLight*>(sceneLights[j])->GetAmbient();
-						SetUniform3fv(IaName, Ia);
+						shaderProgramToUse->SetUniform3fv(IaName, Ia);
 
 						lightSubroutine = "ambient";
 
@@ -166,16 +171,16 @@ void PAG::Renderer::Refresh()
 						glm::vec3 lightDirection = dynamic_cast<DirectionalLight*>(sceneLights[j])->GetDirection();
 						glm::vec4 lightDirectionView = glm::transpose(glm::inverse(mModelView)) * glm::vec4(lightDirection, 0.0);
 
-						SetUniform3fv(lightDirectionName, glm::vec3(lightDirectionView));
+						shaderProgramToUse->SetUniform3fv(lightDirectionName, glm::vec3(lightDirectionView));
 
 						std::string IdName = "Id";
 						glm::vec3 Id = dynamic_cast<DirectionalLight*>(sceneLights[j])->GetDiffuse();
 
-						SetUniform3fv(IdName, Id);
+						shaderProgramToUse->SetUniform3fv(IdName, Id);
 
 						std::string IsName = "Is";
 						glm::vec3 Is = dynamic_cast<DirectionalLight*>(sceneLights[j])->GetSpecular();
-						SetUniform3fv(IsName, Is);
+						shaderProgramToUse->SetUniform3fv(IsName, Is);
 
 						lightSubroutine = "directional";
 
@@ -187,15 +192,15 @@ void PAG::Renderer::Refresh()
 						glm::vec3 lightPosition = dynamic_cast<PointLight*>(sceneLights[j])->GetPosition();
 						glm::vec4 lightPositionView = mModelView * glm::vec4(lightPosition, 1.0);
 
-						SetUniform3fv(lightPositionName, glm::vec3(lightPositionView));
+						shaderProgramToUse->SetUniform3fv(lightPositionName, glm::vec3(lightPositionView));
 
 						std::string IdName = "Id";
 						glm::vec3 Id = dynamic_cast<PointLight*>(sceneLights[j])->GetDiffuse();
-						SetUniform3fv(IdName, Id);
+						shaderProgramToUse->SetUniform3fv(IdName, Id);
 
 						std::string IsName = "Is";
 						glm::vec3 Is = dynamic_cast<PointLight*>(sceneLights[j])->GetSpecular();
-						SetUniform3fv(IsName, Is);
+						shaderProgramToUse->SetUniform3fv(IsName, Is);
 
 						lightSubroutine = "point";
 
@@ -207,25 +212,25 @@ void PAG::Renderer::Refresh()
 						glm::vec3 lightPosition = dynamic_cast<SpotLight*>(sceneLights[j])->GetPosition();
 						glm::vec4 lightPositionView = mModelView * glm::vec4(lightPosition, 1.0);
 
-						SetUniform3fv(lightPositionName, glm::vec3(lightPositionView));
+						shaderProgramToUse->SetUniform3fv(lightPositionName, glm::vec3(lightPositionView));
 
 						std::string lightDirectionName = "lightDirection";
 						glm::vec3 lightDirection = dynamic_cast<SpotLight*>(sceneLights[j])->GetDirection();
 						glm::vec4 lightDirectionView = glm::transpose(glm::inverse(mModelView)) * glm::vec4(lightDirection, 0.0);
 
-						SetUniform3fv(lightDirectionName, glm::vec3(lightDirectionView));
+						shaderProgramToUse->SetUniform3fv(lightDirectionName, glm::vec3(lightDirectionView));
 
 						std::string spotLightAngleName = "spotlightAngle";
 						float spotLightAngle = dynamic_cast<SpotLight*>(sceneLights[j])->GetSpotlightAngle();
-						SetUniform1f(spotLightAngleName, spotLightAngle);
+						shaderProgramToUse->SetUniform1f(spotLightAngleName, spotLightAngle);
 
 						std::string IdName = "Id";
 						glm::vec3 Id = dynamic_cast<SpotLight*>(sceneLights[j])->GetDiffuse();
-						SetUniform3fv(IdName, Id);
+						shaderProgramToUse->SetUniform3fv(IdName, Id);
 
 						std::string IsName = "Is";
 						glm::vec3 Is = dynamic_cast<SpotLight*>(sceneLights[j])->GetSpecular();
-						SetUniform3fv(IsName, Is);
+						shaderProgramToUse->SetUniform3fv(IsName, Is);
 
 						lightSubroutine = "spot";
 
@@ -235,7 +240,29 @@ void PAG::Renderer::Refresh()
 
 #pragma endregion
 
-					SetSubroutineUniform(lightSubroutine);
+					std::string renderSubroutine;
+
+					switch (models[i]->GetRenderMode()) {
+					case RenderMode::SOLID: {
+						renderSubroutine = "material";
+						glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+						break;
+					}
+					case RenderMode::TEXTURE: {
+						renderSubroutine = "texture";
+						shaderProgramToUse->SetUniformSampler2D("texture", 0);
+						models[i]->GetMaterial()->GetTexture()->ActivateTexture(0);
+						glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+						break;
+					}
+					case RenderMode::WIREFRAME: {
+						renderSubroutine = "wireframe";
+						glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+						break;
+					}
+					}
+
+					shaderProgramToUse->SetSubroutineUniforms(lightSubroutine, renderSubroutine);
 
 					glDrawElements(GL_TRIANGLES, models[i]->GetNumIndex(), GL_UNSIGNED_INT, nullptr);
 				}
@@ -263,7 +290,7 @@ void PAG::Renderer::ShoutInfo()
 		<< glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 }
 
-int PAG::Renderer::SwitchModel()
+int PAG::Renderer::SwitchActiveModel()
 {
 	if (models.size() == 0) {
 		activeModel = -1;
@@ -289,13 +316,15 @@ void PAG::Renderer::AddModel()
 		models.push_back(new Model(PAG::ModelType::TRIANGLE, material));
 		break;
 	case 1:
-		models.push_back(CreateTetrahedron());
+		models.push_back(new Model(PAG::ModelType::TETRAHEDRON, material));
 		break;
 	case 2:
-		models.push_back(CreateModel(".\\models\\dado.obj"));
+		material->SetTexture(new Texture(".\\textures\\dado.png"));
+		models.push_back(new Model(".\\models\\dado.obj", material));
 		break;
 	case 3:
-		models.push_back(CreateModel(".\\models\\vaca.obj"));
+		material->SetTexture(new Texture(".\\textures\\spot_texture.png"));
+		models.push_back(new Model(".\\models\\vaca.obj", material));
 		break;
 	default:
 		break;
@@ -308,7 +337,7 @@ void PAG::Renderer::DeleteModel()
 {
 	if (activeModel != -1) {
 		models.erase(models.begin() + activeModel);
-		SwitchModel();
+		SwitchActiveModel();
 	}
 }
 
@@ -332,158 +361,25 @@ void PAG::Renderer::ResetCamera()
 	virtualCamera->Reset();
 }
 
-void PAG::Renderer::ChangeRenderMode(PAG::RenderMode mode)
+void PAG::Renderer::SwitchRenderMode()
 {
-	activeRenderMode = mode;
-}
-
-void PAG::Renderer::SetUniform1f(std::string name, float data)
-{
-	GLint location = glGetUniformLocation(models[activeModel]->GetIdSP(), name.c_str());
-	if (location != -1) {
-		glUniform1f(location, data);
-	}
-	else {
-		throw std::runtime_error("SetUniform1f(): Cannot find localization for: " + name);
-	}
-}
-
-void PAG::Renderer::SetUniform3fv(std::string name, glm::vec3 data)
-{
-	GLint location = glGetUniformLocation(models[activeModel]->GetIdSP(), name.c_str());
-	if (location != -1) {
-		glUniform3fv(location, 1, &data[0]);
-	}
-	else {
-		throw std::runtime_error("SetUniform3fv(): Cannot find localization for: " + name);
+	if (activeModel != -1) {
+		switch (models[activeModel]->GetRenderMode()) {
+		case RenderMode::SOLID:
+			models[activeModel]->SetRenderMode(RenderMode::WIREFRAME);
+			break;
+		case RenderMode::WIREFRAME: 
+			try {
+				models[activeModel]->SetRenderMode(RenderMode::TEXTURE);
+			}
+			catch (std::exception& ex) {
+				std::cout << ex.what() << std::endl;
+			}
+			break;
+		case RenderMode::TEXTURE: 
+			models[activeModel]->SetRenderMode(RenderMode::SOLID);
+			break;
+		}
 	}
 }
 
-void PAG::Renderer::SetUniform4fm(std::string name, glm::mat4 data)
-{
-	GLint location = glGetUniformLocation(models[activeModel]->GetIdSP(), name.c_str());
-	if (location != -1) {
-		glUniformMatrix4fv(location, 1, GL_FALSE, &data[0][0]);
-	}
-	else {
-		throw std::runtime_error("SetUniform4fm(): Cannot find localization for: " + name);
-	}
-}
-
-void PAG::Renderer::SetSubroutineUniform(std::string name)
-{
-	GLuint subroutineLocation = glGetSubroutineIndex(models[activeModel]->GetIdSP(), GL_FRAGMENT_SHADER, name.c_str());
-
-	if (subroutineLocation != -1) {
-		glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &subroutineLocation);
-	}
-	else {
-		throw std::runtime_error("SetSubroutineUniform(): Cannot find localization for: " + subroutineLocation);
-	}
-}
-
-PAG::Model* PAG::Renderer::CreateTriangle()
-{
-	glm::vec3 v1 = { -.5, -.5, 0.0 };
-	glm::vec3 v2 = { .5, -.5, 0.0 };
-	glm::vec3 v3 = { .0, .5, 0.0 };
-
-	glm::vec3 n1 = { 0.0, 0.0, 1.0 };
-
-	std::vector<Vertex> vertex =
-	{
-		Vertex(v1, n1),
-		Vertex(v2, n1),
-		Vertex(v3, n1)
-	};
-
-	std::vector<GLuint> index = { 0, 1, 2 };
-
-	glm::vec3 Ia(0.8, 0.3, 0.3);
-	glm::vec3 Id(0.67, 0.16, 0.24);
-	glm::vec3 Is(0.9, 0.9, 0.9);
-	float Ns = 8.0;
-
-	Model* triangle = new Model(vertex, index);
-	Material* material = new Material(Ia, Id, Is, Ns);
-
-	triangle->SetMaterial(material);
-	triangle->AssignShaderProgram("vs", "fs");
-
-	return triangle;
-}
-
-PAG::Model* PAG::Renderer::CreateTetrahedron()
-{
-	glm::vec3 v1 = { 0.7, 0.0, 0.0 };
-	glm::vec3 v2 = { 0.0, 0.7, 0.0 };
-	glm::vec3 v3 = { 0.0, 0.0, 0.7 };
-	glm::vec3 v4 = { 0.0, 0.0, 0.0 };
-
-	glm::vec3 n1 = { -1.0, 0.0, 0.0 };
-	glm::vec3 n2 = { 0.0, -1.0, 0.0 };
-	glm::vec3 n3 = { 0.0, 0.0, -1.0 };
-	glm::vec3 n4 = { 1.0, 1.0, 1.0 };
-	n4 = glm::normalize(n4);
-
-	std::vector<Vertex> vertex =
-	{
-		// Triángulo 1 (0, 1, 2)
-		Vertex(v1, n4),
-		Vertex(v2, n4),
-		Vertex(v3, n4),
-		// Triángulo 2 (1, 0, 3)
-		Vertex(v2, n3),
-		Vertex(v1, n3),
-		Vertex(v4, n3),
-		// Triángulo 3 (2, 1, 3)
-		Vertex(v3, n1),
-		Vertex(v2, n1),
-		Vertex(v4, n1),
-		// Triángulo 4 (3, 0, 2)
-		Vertex(v4, n2),
-		Vertex(v1, n2),
-		Vertex(v3, n2),
-	};
-
-	std::vector<GLuint> index = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
-
-	glm::vec3 Ia(0.6, 0.2, 0.3);
-	glm::vec3 Id(0.7, 0.2, 0.1);
-	glm::vec3 Is(1, 1, 1);
-	float Ns = 5.0;
-
-	Material* material = new Material(Ia, Id, Is, Ns);
-	Model* tetrahedron = new Model(vertex, index);
-
-	tetrahedron->SetMaterial(material);
-	tetrahedron->AssignShaderProgram("vs", "fs");
-
-	return tetrahedron;
-}
-
-PAG::Model* PAG::Renderer::CreateModel(std::string path)
-{
-	Model* model = nullptr;
-
-	try {
-		model = new Model(path.c_str());
-	}
-	catch (std::runtime_error ex) {
-		std::cout << ex.what() << std::endl;
-	}
-
-	glm::vec3 Ia(0.6, 0.2, 0.3);
-	glm::vec3 Id(0.7, 0.2, 0.1);
-	glm::vec3 Is(1, 1, 1);
-	float Ns = 5.0;
-
-	Material* material = new Material(Ia, Id, Is, Ns);
-
-	if (model != nullptr) {
-		model->SetMaterial(material);
-		model->AssignShaderProgram("vs", "fs");
-	}
-
-	return model;
-}

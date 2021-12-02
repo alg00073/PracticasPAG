@@ -3,6 +3,8 @@
 
 #include "ShaderProgram.h"
 
+#include <vector>
+
 void PAG::ShaderProgram::CheckProgramCompileStatus()
 {
 	GLint linkResult = 0;
@@ -104,5 +106,71 @@ PAG::ShaderProgram::~ShaderProgram()
 GLuint PAG::ShaderProgram::GetID()
 {
 	return idSP;
+}
+
+void PAG::ShaderProgram::SetUniform1f(std::string name, float data)
+{
+	GLint location = glGetUniformLocation(idSP, name.c_str());
+	if (location != -1) {
+		glUniform1f(location, data);
+	}
+	else {
+		throw std::runtime_error("SetUniform1f(): Cannot find localization for: " + name);
+	}
+}
+
+void PAG::ShaderProgram::SetUniform3fv(std::string name, glm::vec3 data)
+{
+	GLint location = glGetUniformLocation(idSP, name.c_str());
+	if (location != -1) {
+		glUniform3fv(location, 1, &data[0]);
+	}
+	else {
+		throw std::runtime_error("SetUniform3fv(): Cannot find localization for: " + name);
+	}
+}
+
+void PAG::ShaderProgram::SetUniform4fm(std::string name, glm::mat4 data)
+{
+	GLint location = glGetUniformLocation(idSP, name.c_str());
+	if (location != -1) {
+		glUniformMatrix4fv(location, 1, GL_FALSE, &data[0][0]);
+	}
+	else {
+		throw std::runtime_error("SetUniform4fm(): Cannot find localization for: " + name);
+	}
+}
+
+void PAG::ShaderProgram::SetUniformSampler2D(std::string name, GLint sampler)
+{
+	GLint posicion = glGetUniformLocation(idSP, name.c_str());
+	glUniform1i(posicion, sampler);
+}
+
+void PAG::ShaderProgram::SetSubroutineUniforms(std::string lightName, std::string renderName)
+{
+	GLuint subroutines[2];
+
+	GLint renderLocation = glGetSubroutineUniformLocation(idSP, GL_FRAGMENT_SHADER, "colorType");
+	GLint lightLocation = glGetSubroutineUniformLocation(idSP, GL_FRAGMENT_SHADER, "lightType");
+
+	if (renderLocation == -1 || lightLocation == -1)
+	{
+		throw std::runtime_error("SetSubroutineUniforms() -> No se ha podido localizar el uniform :" + renderName);
+	}
+
+	GLuint renderIndex = glGetSubroutineIndex(idSP, GL_FRAGMENT_SHADER, renderName.c_str());
+	GLuint lightIndex = glGetSubroutineIndex(idSP, GL_FRAGMENT_SHADER, lightName.c_str());
+
+	if (renderIndex != -1 && lightIndex != -1) {
+
+		subroutines[renderLocation] = renderIndex;
+		subroutines[lightLocation] = lightIndex;
+
+		glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 2, subroutines);
+	}
+	else {
+		throw std::runtime_error("SetSubroutineUniforms(): Cannot find localization for subroutines");
+	}
 }
 

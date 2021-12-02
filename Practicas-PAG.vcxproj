@@ -31,7 +31,7 @@
     <ClInclude Include="src\ShaderObject.h" />
     <ClInclude Include="src\ShaderProgram.h" />
     <ClInclude Include="src\SpotLight.h" />
-    <ClInclude Include="Texture.h" />
+    <ClInclude Include="src\Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\AmbientLight.cpp" />
@@ -47,7 +47,7 @@
     <ClCompile Include="src\ShaderObject.cpp" />
     <ClCompile Include="src\ShaderProgram.cpp" />
     <ClCompile Include="src\SpotLight.cpp" />
-    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

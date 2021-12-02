@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-PAG::Model::Model(ModelType type, Material* material = nullptr) : shaderProgram(nullptr), modelType(type), material(material)
+PAG::Model::Model(ModelType type, Material* material) : shaderProgram(nullptr), modelType(type), material(material)
 {
 	switch (type) {
 	case ModelType::TRIANGLE: {
@@ -75,9 +75,11 @@ PAG::Model::Model(ModelType type, Material* material = nullptr) : shaderProgram(
 	GenerateVAO();
 	GenerateVBO();
 	GenerateIBO();
+
+	AssignShaderProgram("vs", "fs");
 }
 
-PAG::Model::Model(const char* path, Material* material = nullptr) : shaderProgram(nullptr), modelType(ModelType::OBJ), material(material)
+PAG::Model::Model(const char* path, Material* material) : shaderProgram(nullptr), modelType(ModelType::OBJ), material(material)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenSmoothNormals);
@@ -92,6 +94,8 @@ PAG::Model::Model(const char* path, Material* material = nullptr) : shaderProgra
 	GenerateVAO();
 	GenerateVBO();
 	GenerateIBO();
+
+	AssignShaderProgram("vs", "fs");
 }
 
 PAG::Model::~Model()
@@ -119,17 +123,15 @@ void PAG::Model::AssignShaderProgram(std::string vertexShader, std::string fragm
 {
 	try {
 		shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
-
-		idSP = shaderProgram->GetID();
 	}
 	catch (std::exception& ex) {
 		throw std::runtime_error("Model::AssignShaderProgram() -> " + (std::string)ex.what());
 	}
 }
 
-GLuint PAG::Model::GetIdSP()
+PAG::ShaderProgram* PAG::Model::GetShaderProgram()
 {
-	return idSP;
+	return shaderProgram;
 }
 
 GLuint PAG::Model::GetIdVAO()
@@ -150,6 +152,22 @@ GLuint PAG::Model::GetIdIBO()
 int PAG::Model::GetNumIndex()
 {
 	return index.size();
+}
+
+void PAG::Model::SetRenderMode(RenderMode mode)
+{
+	if (mode == RenderMode::TEXTURE && material->GetTexture() == nullptr) {
+		renderMode = RenderMode::SOLID;
+		throw std::runtime_error("SetRenderMode() -> El modelo no tiene textura asociada");
+	}
+	else {
+		renderMode = mode;
+	}
+}
+
+PAG::RenderMode PAG::Model::GetRenderMode()
+{
+	return renderMode;
 }
 
 void PAG::Model::SetMaterial(Material* material)

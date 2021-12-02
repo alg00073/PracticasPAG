@@ -9,6 +9,23 @@ PAG::Material::Material(const Material& other): ambientColor(other.ambientColor)
 {
 }
 
+PAG::Material::~Material()
+{
+    delete texture;
+    
+    texture = nullptr;
+}
+
+void PAG::Material::SetTexture(Texture* texture)
+{
+    this->texture = texture;
+}
+
+PAG::Texture* PAG::Material::GetTexture()
+{
+    return texture;
+}
+
 glm::vec3 PAG::Material::GetAmbientColor()
 {
     return ambientColor;
