@@ -7,7 +7,7 @@ PAG::Renderer* PAG::Renderer::instance = nullptr;
 
 PAG::Renderer::Renderer()
 {
-	AddModel();
+	AddModel(0);
 
 #pragma region Camera Parameters
 
@@ -302,7 +302,7 @@ int PAG::Renderer::SwitchActiveModel()
 	return activeModel;
 }
 
-void PAG::Renderer::AddModel()
+void PAG::Renderer::AddModel(int model)
 {
 	glm::vec3 Ia(0.6, 0.2, 0.3);
 	glm::vec3 Id(0.7, 0.2, 0.1);
@@ -311,7 +311,7 @@ void PAG::Renderer::AddModel()
 
 	Material* material = new Material(Ia, Id, Is, Ns);
 
-	switch (models.size()) {
+	switch (model) {
 	case 0:
 		models.push_back(new Model(PAG::ModelType::TRIANGLE, material));
 		break;

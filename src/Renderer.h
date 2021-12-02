@@ -42,7 +42,7 @@ namespace PAG {
 		void Resize(int width, int height);
 		void ShoutInfo();
 		int SwitchActiveModel();
-		void AddModel();
+		void AddModel(int model);
 		void DeleteModel();
 		void ChangeCameraMovement(PAG::MovementType type);
 		void ApplyCameraMovement(double deltaX, double deltaY);
