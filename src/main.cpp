@@ -106,7 +106,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		break;
 	default:
 		std::cout << "CONTROLES: \nA: Cambiar modelo\nB: Borrar modelo" <<
-			"\nW: Cambiar modo de render WIREFRAME\nS : Cambiar modo de render SOLID" <<
+			"\nSPACE: Cambiar modo de render" <<
 			"\nENTER: Resetear la cámara\nP : Seleccionar movimiento PAN" <<
 			"\nT : Seleccionar movimiento TILT\nD : Seleccionar movimiento DOLLY" <<
 			"\nC : Seleccionar movimiento CRANE\nO : Seleccionar movimiento ORBIT" <<
