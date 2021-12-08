@@ -48,13 +48,14 @@
     <ClCompile Include="src\ShaderProgram.cpp" />
     <ClCompile Include="src\SpotLight.cpp" />
     <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\Transform.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{883f7259-e71c-4c95-ae41-40a01ed21cab}</ProjectGuid>
     <RootNamespace>PracticasPAG</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.20348.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

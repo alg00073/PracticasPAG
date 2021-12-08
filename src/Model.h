@@ -3,6 +3,7 @@
 #include "glm/glm.hpp"
 #include "ShaderProgram.h"
 #include "Material.h"
+#include "Transform.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -51,6 +52,7 @@ namespace PAG {
 		std::vector<Vertex> vertex;
 		std::vector<GLuint> index;
 
+		Transform* transform;
 		ShaderProgram* shaderProgram;
 		Material* material;
 
@@ -86,6 +88,8 @@ namespace PAG {
 
 		void SetMaterial(Material* material);
 		Material* GetMaterial();
+
+		Transform* GetTransform();
 	};
 }
 

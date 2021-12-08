@@ -24,9 +24,10 @@ namespace PAG {
 
 		int activeModel = 0;
 		std::vector<Model*> models;
+		TransformMode activeTransformMode = PAG::TransformMode::TRANSLATE;
 
 		Camera* virtualCamera;
-		MovementType activeMovementType = PAG::MovementType::ORBIT;
+		CameraMovementType activeMovementType = PAG::CameraMovementType::ORBIT;
 
 		std::vector<Light*> sceneLights;
 
@@ -41,13 +42,17 @@ namespace PAG {
 		void Refresh();
 		void Resize(int width, int height);
 		void ShoutInfo();
+
+		void SwitchRenderMode();
 		int SwitchActiveModel();
 		void AddModel(int model);
 		void DeleteModel();
-		void ChangeCameraMovement(PAG::MovementType type);
+		std::string SwitchTransformMode();
+		void ApplyTransform(glm::vec3 deltaTransform);
+
+		void ChangeCameraMovement(PAG::CameraMovementType type);
 		void ApplyCameraMovement(double deltaX, double deltaY);
 		void ResetCamera();
-		void SwitchRenderMode();
 	};
 }
 

@@ -10,7 +10,7 @@ PAG::Camera::Camera(glm::vec3 position, glm::vec3 lookAt, float fovX, float near
 	RecalculateCamera();
 }
 
-glm::mat4 PAG::Camera::GetModelViewProjMatrix()
+glm::mat4 PAG::Camera::GetViewProjMatrix()
 {
 	try {
 		RecalculateCamera();
@@ -25,7 +25,7 @@ glm::mat4 PAG::Camera::GetModelViewProjMatrix()
 	return projection * view;
 }
 
-glm::mat4 PAG::Camera::GetModelViewMatrix()
+glm::mat4 PAG::Camera::GetViewMatrix()
 {
 	try {
 		RecalculateCamera();
@@ -78,17 +78,17 @@ void PAG::Camera::RecalculateCamera()
 	v = glm::cross(n, u);
 }
 
-void PAG::Camera::ApplyMovement(double deltaX, double deltaY, MovementType type)
+void PAG::Camera::ApplyMovement(double deltaX, double deltaY, CameraMovementType type)
 {
 	switch (type)
 	{
-	case PAG::MovementType::PAN:
+	case PAG::CameraMovementType::PAN:
 		Pan(deltaX);
 		break;
-	case PAG::MovementType::TILT:
+	case PAG::CameraMovementType::TILT:
 		Tilt(deltaY);
 		break;
-	case PAG::MovementType::DOLLY:
+	case PAG::CameraMovementType::DOLLY:
 	{
 		double translateX = deltaX / 100;
 		double translateZ = deltaY / 100;
@@ -96,17 +96,17 @@ void PAG::Camera::ApplyMovement(double deltaX, double deltaY, MovementType type)
 		Dolly(translateX, translateZ);
 		break;
 	}
-	case PAG::MovementType::CRANE:
+	case PAG::CameraMovementType::CRANE:
 	{
 		double translateY = deltaY / 100;
 
 		Crane(translateY);
 		break;
 	}
-	case PAG::MovementType::ORBIT:
+	case PAG::CameraMovementType::ORBIT:
 		Orbit(deltaX, deltaY);
 		break;
-	case PAG::MovementType::ZOOM:
+	case PAG::CameraMovementType::ZOOM:
 	{
 		double zoomFactor = deltaY / 100;
 		Zoom(zoomFactor);

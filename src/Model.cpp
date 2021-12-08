@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-PAG::Model::Model(ModelType type, Material* material) : shaderProgram(nullptr), modelType(type), material(material)
+PAG::Model::Model(ModelType type, Material* material) : shaderProgram(nullptr), modelType(type), material(material), transform(new Transform())
 {
 	switch (type) {
 	case ModelType::TRIANGLE: {
@@ -79,7 +79,7 @@ PAG::Model::Model(ModelType type, Material* material) : shaderProgram(nullptr), 
 	AssignShaderProgram("vs", "fs");
 }
 
-PAG::Model::Model(const char* path, Material* material) : shaderProgram(nullptr), modelType(ModelType::OBJ), material(material)
+PAG::Model::Model(const char* path, Material* material) : shaderProgram(nullptr), modelType(ModelType::OBJ), material(material), transform(new Transform())
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenSmoothNormals);
@@ -107,14 +107,16 @@ PAG::Model::~Model()
 	glDeleteBuffers(1, &idIBO);
 	glDeleteVertexArrays(1, &idVAO);
 
+	delete transform;
 	delete shaderProgram;
 	delete material;
 
 	shaderProgram, material = nullptr;
 }
 
-PAG::Model::Model(const Model& other) : vertex(other.vertex), index(other.index)
+PAG::Model::Model(const Model& other) : vertex(other.vertex), index(other.index), modelType(other.modelType)
 {
+	transform = new Transform();
 	shaderProgram = new ShaderProgram(*other.shaderProgram);
 	material = new Material(*other.material);
 }
@@ -178,6 +180,11 @@ void PAG::Model::SetMaterial(Material* material)
 PAG::Material* PAG::Model::GetMaterial()
 {
 	return material;
+}
+
+PAG::Transform* PAG::Model::GetTransform()
+{
+	return transform;
 }
 
 void PAG::Model::processNode(aiNode* node, const aiScene* scene)

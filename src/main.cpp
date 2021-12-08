@@ -42,56 +42,59 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		break;
 	case GLFW_KEY_W:
 		// Move active model forward
+		PAG::Renderer::Instance()->ApplyTransform(glm::vec3(0, 0, -0.02f));
 		break;
 	case GLFW_KEY_A:
 		// Move active model left
+		PAG::Renderer::Instance()->ApplyTransform(glm::vec3(-0.02, 0, 0));
 		break;
 	case GLFW_KEY_S:
 		// Move active model backwards
+		PAG::Renderer::Instance()->ApplyTransform(glm::vec3(0, 0, 0.02));
 		break;
 	case GLFW_KEY_D:
 		// Move active model right
+		PAG::Renderer::Instance()->ApplyTransform(glm::vec3(0.02, 0, 0));
 		break;
 	case GLFW_KEY_Q:
 		// Move active model up
+		PAG::Renderer::Instance()->ApplyTransform(glm::vec3(0, 0.02, 0));
 		break;
 	case GLFW_KEY_E:
 		// Move active model down
+		PAG::Renderer::Instance()->ApplyTransform(glm::vec3(0, -0.02, 0));
 		break;
 	case GLFW_KEY_TAB:
 		std::cout << "Modelo activo cambiado: " << 
 			PAG::Renderer::Instance()->SwitchActiveModel() << std::endl;
-		window_refresh_callback(window);
+		break;
+	case GLFW_KEY_LEFT_CONTROL:
+		std::cout << "Modo de transformación cambiado: " <<
+			PAG::Renderer::Instance()->SwitchTransformMode() << std::endl;
 		break;
 	case GLFW_KEY_1:
 		std::cout << "Modelo añadido: TRIANGULO" << std::endl;
 		PAG::Renderer::Instance()->AddModel(0);
-		window_refresh_callback(window);
 		break;
 	case GLFW_KEY_2:
 		std::cout << "Modelo añadido: TETRAEDRO" << std::endl;
 		PAG::Renderer::Instance()->AddModel(1);
-		window_refresh_callback(window);
 		break;
 	case GLFW_KEY_3:
 		std::cout << "Modelo añadido: DADO" << std::endl;
 		PAG::Renderer::Instance()->AddModel(2);
-		window_refresh_callback(window);
 		break;
 	case GLFW_KEY_4:
 		std::cout << "Modelo añadido: VACA" << std::endl;
 		PAG::Renderer::Instance()->AddModel(3);
-		window_refresh_callback(window);
 		break;
 	case GLFW_KEY_B:
 		std::cout << "Modelo borrado" << std::endl;
 		PAG::Renderer::Instance()->DeleteModel();
-		window_refresh_callback(window);
 		break;
 	case GLFW_KEY_SPACE:
 		std::cout << "Cambiado modo de render" << std::endl;
 		PAG::Renderer::Instance()->SwitchRenderMode();
-		window_refresh_callback(window);
 		break;
 	case GLFW_KEY_ENTER: // Reset the camera
 		std::cout << "Camara reseteada" << std::endl;
@@ -99,27 +102,27 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		break;
 	case GLFW_KEY_P:
 		std::cout << "Movimiento actual: PAN" << std::endl;
-		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::MovementType::PAN);
+		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::CameraMovementType::PAN);
 		break;
 	case GLFW_KEY_T:
 		std::cout << "Movimiento actual: TILT" << std::endl;
-		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::MovementType::TILT);
+		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::CameraMovementType::TILT);
 		break;
 	case GLFW_KEY_Y:
 		std::cout << "Movimiento actual: DOLLY" << std::endl;
-		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::MovementType::DOLLY);
+		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::CameraMovementType::DOLLY);
 		break;
 	case GLFW_KEY_C:
 		std::cout << "Movimiento actual: CRANE" << std::endl;
-		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::MovementType::CRANE);
+		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::CameraMovementType::CRANE);
 		break;
 	case GLFW_KEY_O:
 		std::cout << "Movimiento actual: ORBIT" << std::endl;
-		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::MovementType::ORBIT);
+		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::CameraMovementType::ORBIT);
 		break;
 	case GLFW_KEY_Z:
 		std::cout << "Movimiento actual: ZOOM" << std::endl;
-		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::MovementType::ZOOM);
+		PAG::Renderer::Instance()->ChangeCameraMovement(PAG::CameraMovementType::ZOOM);
 		break;
 	case GLFW_KEY_LEFT:
 		PAG::Renderer::Instance()->ApplyCameraMovement(-1, 0);
@@ -138,7 +141,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			
 			// Controles para mover el modelo
 			"CONTROLES: \nWASD: Mover el modelo activo en el plano XY" << 
-			"QE: Mover el modelo activo en el eje Z" <<
+			"\nQE: Mover el modelo activo en el eje Z" << "\nLEFT CTRL: Cambiar modo de transformacion" <<
 
 			// Crear, borrar, y modificar modelos
 			"\n1, 2, 3, 4: Crear modelos\nB: Borrar modelo" <<
@@ -300,6 +303,21 @@ int main()
 
 	PAG::Renderer::Instance()->InitializeOpenGL();
 	PAG::Renderer::Instance()->Refresh();
+
+	std::cout <<
+		// Controles para mover el modelo
+		"CONTROLES: \nWASD: Mover el modelo activo en el plano XY" <<
+		"\nQE: Mover el modelo activo en el eje Z" << "\nLEFT CTRL: Cambiar modo de transformacion" <<
+
+		// Crear, borrar, y modificar modelos
+		"\n1, 2, 3, 4: Crear modelos\nB: Borrar modelo" <<
+		"\nSPACE: Cambiar modo de render" << "\nTAB: Cambiar modelo activo"
+
+		// Movimientos de la cámara
+		"\nENTER: Resetear la cámara\nP : Seleccionar movimiento PAN" <<
+		"\nT : Seleccionar movimiento TILT\nY : Seleccionar movimiento DOLLY" <<
+		"\nC : Seleccionar movimiento CRANE\nO : Seleccionar movimiento ORBIT" <<
+		"\nZ : Seleccionar movimiento ZOOM\nFlechas: Mover cámara con teclado" << std::endl;
 
 	// - Ciclo de eventos de la aplicación. La condición de parada es que la
 	// ventana principal deba cerrarse, por ejemplo, si el usuario pulsa el

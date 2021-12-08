@@ -4,7 +4,7 @@
 
 namespace PAG {
 
-	enum class MovementType {
+	enum class CameraMovementType {
 		PAN,
 		TILT,
 		DOLLY,
@@ -40,14 +40,14 @@ namespace PAG {
 
 		Camera(glm::vec3 position, glm::vec3 lookAt, float fovX, float nearZ, float farZ, int height, int width);
 
-		glm::mat4 GetModelViewProjMatrix();
-		glm::mat4 GetModelViewMatrix();
+		glm::mat4 GetViewProjMatrix();
+		glm::mat4 GetViewMatrix();
 
 		void SetHeight(int height);
 		void SetWidth(int width);
 
 		void RecalculateCamera();
-		void ApplyMovement(double deltaX, double deltaY, MovementType type);
+		void ApplyMovement(double deltaX, double deltaY, CameraMovementType type);
 		void Reset();
 	};
 }

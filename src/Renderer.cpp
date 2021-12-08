@@ -115,12 +115,12 @@ void PAG::Renderer::Refresh()
 
 					// Uniform matriz modelado, vision y proyección
 					std::string mModelViewProjName = "mModelViewProj";
-					glm::mat4 mModelViewProj = virtualCamera->GetModelViewProjMatrix();
+					glm::mat4 mModelViewProj = virtualCamera->GetViewProjMatrix() * models[i]->GetTransform()->GetModelMatrix();
 					shaderProgramToUse->SetUniform4fm(mModelViewProjName, mModelViewProj);
 
 					// Uniform matriz modelado y vision
 					std::string mModelViewName = "mModelView";
-					glm::mat4 mModelView = virtualCamera->GetModelViewMatrix();
+					glm::mat4 mModelView = virtualCamera->GetViewMatrix() * models[i]->GetTransform()->GetModelMatrix();
 					shaderProgramToUse->SetUniform4fm(mModelViewName, mModelView);
 
 					// Uniform matriz modelado y vision (inversa de la traspuesta)
@@ -151,6 +151,8 @@ void PAG::Renderer::Refresh()
 
 #pragma region Light Uniforms
 
+					glm::mat4 viewMatrix = virtualCamera->GetViewMatrix();
+
 					std::string lightSubroutine;
 
 					switch (sceneLights[j]->GetLightType())
@@ -169,7 +171,7 @@ void PAG::Renderer::Refresh()
 
 						std::string lightDirectionName = "lightDirection";
 						glm::vec3 lightDirection = dynamic_cast<DirectionalLight*>(sceneLights[j])->GetDirection();
-						glm::vec4 lightDirectionView = glm::transpose(glm::inverse(mModelView)) * glm::vec4(lightDirection, 0.0);
+						glm::vec4 lightDirectionView = glm::transpose(glm::inverse(viewMatrix)) * glm::vec4(lightDirection, 0.0);
 
 						shaderProgramToUse->SetUniform3fv(lightDirectionName, glm::vec3(lightDirectionView));
 
@@ -190,7 +192,7 @@ void PAG::Renderer::Refresh()
 
 						std::string lightPositionName = "lightPosition";
 						glm::vec3 lightPosition = dynamic_cast<PointLight*>(sceneLights[j])->GetPosition();
-						glm::vec4 lightPositionView = mModelView * glm::vec4(lightPosition, 1.0);
+						glm::vec4 lightPositionView = viewMatrix * glm::vec4(lightPosition, 1.0);
 
 						shaderProgramToUse->SetUniform3fv(lightPositionName, glm::vec3(lightPositionView));
 
@@ -210,13 +212,13 @@ void PAG::Renderer::Refresh()
 
 						std::string lightPositionName = "lightPosition";
 						glm::vec3 lightPosition = dynamic_cast<SpotLight*>(sceneLights[j])->GetPosition();
-						glm::vec4 lightPositionView = mModelView * glm::vec4(lightPosition, 1.0);
+						glm::vec4 lightPositionView = viewMatrix * glm::vec4(lightPosition, 1.0);
 
 						shaderProgramToUse->SetUniform3fv(lightPositionName, glm::vec3(lightPositionView));
 
 						std::string lightDirectionName = "lightDirection";
 						glm::vec3 lightDirection = dynamic_cast<SpotLight*>(sceneLights[j])->GetDirection();
-						glm::vec4 lightDirectionView = glm::transpose(glm::inverse(mModelView)) * glm::vec4(lightDirection, 0.0);
+						glm::vec4 lightDirectionView = glm::transpose(glm::inverse(viewMatrix)) * glm::vec4(lightDirection, 0.0);
 
 						shaderProgramToUse->SetUniform3fv(lightDirectionName, glm::vec3(lightDirectionView));
 
@@ -335,6 +337,10 @@ void PAG::Renderer::AddModel(int model)
 		break;
 	}
 
+	if (models.size() == 1) {
+		SwitchActiveModel();
+	}
+
 	Refresh();
 }
 
@@ -346,7 +352,62 @@ void PAG::Renderer::DeleteModel()
 	}
 }
 
-void PAG::Renderer::ChangeCameraMovement(PAG::MovementType type)
+std::string PAG::Renderer::SwitchTransformMode()
+{
+	if (activeModel != -1) {
+		switch (activeTransformMode) {
+		case TransformMode::TRANSLATE:
+			activeTransformMode = TransformMode::ROTATE;
+			return "ROTATE";
+			break;
+		case TransformMode::ROTATE:
+			activeTransformMode = TransformMode::SCALE;
+			return "SCALE";
+			break;
+		case TransformMode::SCALE:
+			activeTransformMode = TransformMode::TRANSLATE;
+			return "TRANSLATE";
+			break;
+		}
+	}
+}
+
+void PAG::Renderer::ApplyTransform(glm::vec3 deltaTransform)
+{
+	if (activeModel != -1) {
+		switch (activeTransformMode) {
+		case TransformMode::TRANSLATE:
+			models[activeModel]->GetTransform()->SetPosition(
+				glm::vec3(
+					models[activeModel]->GetTransform()->GetPosition().x + deltaTransform.x,
+					models[activeModel]->GetTransform()->GetPosition().y + deltaTransform.y,
+					models[activeModel]->GetTransform()->GetPosition().z + deltaTransform.z
+				)
+			);
+			break;
+		case TransformMode::ROTATE:
+			models[activeModel]->GetTransform()->SetRotation(
+				glm::vec3(
+					models[activeModel]->GetTransform()->GetRotation().x + deltaTransform.x * 100,
+					models[activeModel]->GetTransform()->GetRotation().y + deltaTransform.y * 100,
+					models[activeModel]->GetTransform()->GetRotation().z + deltaTransform.z * 100
+				)
+			);
+			break;
+		case TransformMode::SCALE:
+			models[activeModel]->GetTransform()->SetScale(
+				glm::vec3(
+					models[activeModel]->GetTransform()->GetScale().x + deltaTransform.x,
+					models[activeModel]->GetTransform()->GetScale().y + deltaTransform.y,
+					models[activeModel]->GetTransform()->GetScale().z + deltaTransform.z
+				)
+			);
+			break;
+		}
+	}
+}
+
+void PAG::Renderer::ChangeCameraMovement(PAG::CameraMovementType type)
 {
 	activeMovementType = type;
 }
