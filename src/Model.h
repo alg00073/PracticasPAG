@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 #include "glm/glm.hpp"
-#include "ShaderProgram.h"
 #include "Material.h"
 #include "Transform.h"
 #include <assimp/Importer.hpp>
@@ -15,17 +14,31 @@ namespace PAG {
 		glm::vec3 position;
 		glm::vec3 normal;
 		glm::vec2 texCoord;
+		glm::vec3 tangent;
+		glm::vec3 bitangent;
 
 		Vertex(glm::vec3 p, glm::vec3 n) {
 			position = p;
 			normal = n;
 			texCoord = glm::vec2(0, 0);
+			tangent = glm::vec3(0, 0, 0);
+			bitangent = glm::vec3(0, 0, 0);
 		}
 
 		Vertex(glm::vec3 p, glm::vec3 n, glm::vec2 tc) {
 			position = p;
 			normal = n;
 			texCoord = tc;
+			tangent = glm::vec3(0, 0, 0);
+			bitangent = glm::vec3(0, 0, 0);
+		}
+
+		Vertex(glm::vec3 p, glm::vec3 n, glm::vec2 tc, glm::vec3 t, glm::vec3 bt) {
+			position = p;
+			normal = n;
+			texCoord = tc;
+			tangent = t;
+			bitangent = bt;
 		}
 	};
 
@@ -53,7 +66,7 @@ namespace PAG {
 		std::vector<GLuint> index;
 
 		Transform* transform;
-		ShaderProgram* shaderProgram;
+		
 		Material* material;
 
 		GLuint idVAO = 0; // Identificador del vertex array object
@@ -73,9 +86,6 @@ namespace PAG {
 
 		Model(const Model& other);
 		virtual ~Model();
-
-		void AssignShaderProgram(std::string vertexShader, std::string fragmentShader);
-		ShaderProgram* GetShaderProgram();
 
 		GLuint GetIdVAO();
 		GLuint GetIdVBO();

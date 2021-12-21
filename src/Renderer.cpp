@@ -105,7 +105,7 @@ void PAG::Renderer::Refresh()
 
 					glBlendFunc(GL_SRC_ALPHA, j == 0 ? GL_ONE_MINUS_SRC_ALPHA : GL_ONE);
 
-					ShaderProgram* shaderProgramToUse = models[i]->GetShaderProgram();
+					ShaderProgram* shaderProgramToUse = models[i]->GetMaterial()->GetShaderProgram();
 
 					glUseProgram(shaderProgramToUse->GetID());
 					glBindVertexArray(models[i]->GetIdVAO());
@@ -312,6 +312,7 @@ void PAG::Renderer::AddModel(int model)
 	float Ns = 5.0;
 
 	Material* material = new Material(Ia, Id, Is, Ns);
+	material->SetShaderProgram("vs", "fs");
 
 	switch (model) {
 	case 0:

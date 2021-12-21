@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-PAG::Model::Model(ModelType type, Material* material) : shaderProgram(nullptr), modelType(type), material(material), transform(new Transform())
+PAG::Model::Model(ModelType type, Material* material) : modelType(type), material(material), transform(new Transform())
 {
 	switch (type) {
 	case ModelType::TRIANGLE: {
@@ -75,11 +75,9 @@ PAG::Model::Model(ModelType type, Material* material) : shaderProgram(nullptr), 
 	GenerateVAO();
 	GenerateVBO();
 	GenerateIBO();
-
-	AssignShaderProgram("vs", "fs");
 }
 
-PAG::Model::Model(const char* path, Material* material) : shaderProgram(nullptr), modelType(ModelType::OBJ), material(material), transform(new Transform())
+PAG::Model::Model(const char* path, Material* material) : modelType(ModelType::OBJ), material(material), transform(new Transform())
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenSmoothNormals);
@@ -94,8 +92,6 @@ PAG::Model::Model(const char* path, Material* material) : shaderProgram(nullptr)
 	GenerateVAO();
 	GenerateVBO();
 	GenerateIBO();
-
-	AssignShaderProgram("vs", "fs");
 }
 
 PAG::Model::~Model()
@@ -108,32 +104,16 @@ PAG::Model::~Model()
 	glDeleteVertexArrays(1, &idVAO);
 
 	delete transform;
-	delete shaderProgram;
 	delete material;
 
-	shaderProgram, material = nullptr;
+	transform = nullptr;
+	material = nullptr;
 }
 
 PAG::Model::Model(const Model& other) : vertex(other.vertex), index(other.index), modelType(other.modelType)
 {
 	transform = new Transform();
-	shaderProgram = new ShaderProgram(*other.shaderProgram);
 	material = new Material(*other.material);
-}
-
-void PAG::Model::AssignShaderProgram(std::string vertexShader, std::string fragmentShader)
-{
-	try {
-		shaderProgram = new ShaderProgram(vertexShader, fragmentShader);
-	}
-	catch (std::exception& ex) {
-		throw std::runtime_error("Model::AssignShaderProgram() -> " + (std::string)ex.what());
-	}
-}
-
-PAG::ShaderProgram* PAG::Model::GetShaderProgram()
-{
-	return shaderProgram;
 }
 
 GLuint PAG::Model::GetIdVAO()
@@ -215,7 +195,20 @@ void PAG::Model::processNode(aiNode* node, const aiScene* scene)
 				texCoord.y = mesh->mTextureCoords[0][i].y;
 			}
 
-			vertex.push_back(Vertex(position, normal, texCoord));
+			glm::vec3 tangent(0.0f, 0.0f, 0.0f);
+			glm::vec3 bitangent(0.0f, 0.0f, 0.0f);
+
+			if (mesh->mTangents) {
+				tangent.x = mesh->mTangents[i].x;
+				tangent.y = mesh->mTangents[i].y;
+				tangent.z = mesh->mTangents[i].z;
+
+				bitangent.x = mesh->mBitangents[i].x;
+				bitangent.y = mesh->mBitangents[i].y;
+				bitangent.z = mesh->mBitangents[i].z;
+			}
+
+			vertex.push_back(Vertex(position, normal, texCoord, tangent, bitangent));
 		}
 
 		// process index
@@ -257,6 +250,14 @@ void PAG::Model::GenerateVBO()
 	// Atributo 3: Coordenadas de textura
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLubyte*)0 + offsetof(Vertex, texCoord));
+
+	// Atributo 4: Tangentes
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLubyte*)0 + offsetof(Vertex, tangent));
+
+	// Atributo 5: Bitangentes
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLubyte*)0 + offsetof(Vertex, bitangent));
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertex.size(), vertex.data(), GL_STATIC_DRAW);
 }
