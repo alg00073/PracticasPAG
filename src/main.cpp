@@ -95,6 +95,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	case GLFW_KEY_SPACE:
 		std::cout << "Cambiado modo de render" << std::endl;
 		PAG::Renderer::Instance()->SwitchRenderMode();
+		window_refresh_callback(window);
 		break;
 	case GLFW_KEY_ENTER: // Reset the camera
 		std::cout << "Camara reseteada" << std::endl;

@@ -14,7 +14,7 @@ uniform vec3 Ia;
 uniform vec3 Id;
 uniform vec3 Is;
 
-uniform float phongExponent;    
+uniform float phongExponent;  
 uniform float spotlightAngle;
 
 uniform sampler2D textureSampler;
@@ -97,5 +97,5 @@ vec4 textureColor()
   vec4 normal = 2.0 * (texture(normalTextureSampler, texCoord) - 0.5); 
   vec4 color = texture(textureSampler, texCoord);
 
-  return vec4( lightMode(color.rgb, color.rgb, normal), 1.0);
+  return vec4( lightType(color.rgb, color.rgb, normal), 1.0);
 }

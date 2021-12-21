@@ -80,7 +80,7 @@ PAG::Model::Model(ModelType type, Material* material) : modelType(type), materia
 PAG::Model::Model(const char* path, Material* material) : modelType(ModelType::OBJ), material(material), transform(new Transform())
 {
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(path, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenSmoothNormals);
+	const aiScene* scene = importer.ReadFile(path, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace );
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -199,6 +199,9 @@ void PAG::Model::processNode(aiNode* node, const aiScene* scene)
 			glm::vec3 bitangent(0.0f, 0.0f, 0.0f);
 
 			if (mesh->mTangents) {
+
+				std::cout << "Tiene tangentes" << std::endl;
+
 				tangent.x = mesh->mTangents[i].x;
 				tangent.y = mesh->mTangents[i].y;
 				tangent.z = mesh->mTangents[i].z;

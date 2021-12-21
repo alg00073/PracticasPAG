@@ -104,154 +104,40 @@ void PAG::Renderer::Refresh()
 				for (int j = 0; j < sceneLights.size(); j++) {
 
 					glBlendFunc(GL_SRC_ALPHA, j == 0 ? GL_ONE_MINUS_SRC_ALPHA : GL_ONE);
-
-					ShaderProgram* shaderProgramToUse = models[i]->GetMaterial()->GetShaderProgram();
-
-					glUseProgram(shaderProgramToUse->GetID());
 					glBindVertexArray(models[i]->GetIdVAO());
 					glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, models[i]->GetIdIBO());
 
-#pragma region Common Uniforms
-
-					// Uniform matriz modelado, vision y proyección
-					std::string mModelViewProjName = "mModelViewProj";
-					glm::mat4 mModelViewProj = virtualCamera->GetViewProjMatrix() * models[i]->GetTransform()->GetModelMatrix();
-					shaderProgramToUse->SetUniform4fm(mModelViewProjName, mModelViewProj);
-
-					// Uniform matriz modelado y vision
-					std::string mModelViewName = "mModelView";
-					glm::mat4 mModelView = virtualCamera->GetViewMatrix() * models[i]->GetTransform()->GetModelMatrix();
-					shaderProgramToUse->SetUniform4fm(mModelViewName, mModelView);
-
-					// Uniform matriz modelado y vision (inversa de la traspuesta)
-					std::string mModelViewITName = "mModelViewIT";
-					shaderProgramToUse->SetUniform4fm(mModelViewITName, glm::inverse(glm::transpose(mModelView)));
-
-					// Uniform color ambiente del material
-					std::string KaName = "Ka";
-					glm::vec3 Ka = models[i]->GetMaterial()->GetAmbientColor();
-					shaderProgramToUse->SetUniform3fv(KaName, Ka);
-
-					// Uniform color difuso del material
-					std::string KdName = "Kd";
-					glm::vec3 Kd = models[i]->GetMaterial()->GetDiffuseColor();
-					shaderProgramToUse->SetUniform3fv(KdName, Kd);
-
-					// Uniform color especular del material
-					std::string KsName = "Ks";
-					glm::vec3 Ks = models[i]->GetMaterial()->GetSpecularColor();
-					shaderProgramToUse->SetUniform3fv(KsName, Ks);
-
-					// Uniform para pasar el phongExponent del material
-					std::string phongExponentName = "phongExponent";
-					float phongExponent = models[i]->GetMaterial()->GetPhongExponent();
-					shaderProgramToUse->SetUniform1f(phongExponentName, phongExponent);
-
-#pragma endregion
-
-#pragma region Light Uniforms
-
-					glm::mat4 viewMatrix = virtualCamera->GetViewMatrix();
-
+					std::string renderSubroutine;
 					std::string lightSubroutine;
 
-					switch (sceneLights[j]->GetLightType())
-					{
-					case PAG::LightType::AMBIENT: {
-
-						std::string IaName = "Ia";
-						glm::vec3 Ia = dynamic_cast<AmbientLight*>(sceneLights[j])->GetAmbient();
-						shaderProgramToUse->SetUniform3fv(IaName, Ia);
-
-						lightSubroutine = "ambient";
-
-						break;
-					}
-					case PAG::LightType::DIRECTIONAL: {
-
-						std::string lightDirectionName = "lightDirection";
-						glm::vec3 lightDirection = dynamic_cast<DirectionalLight*>(sceneLights[j])->GetDirection();
-						glm::vec4 lightDirectionView = glm::transpose(glm::inverse(viewMatrix)) * glm::vec4(lightDirection, 0.0);
-
-						shaderProgramToUse->SetUniform3fv(lightDirectionName, glm::vec3(lightDirectionView));
-
-						std::string IdName = "Id";
-						glm::vec3 Id = dynamic_cast<DirectionalLight*>(sceneLights[j])->GetDiffuse();
-
-						shaderProgramToUse->SetUniform3fv(IdName, Id);
-
-						std::string IsName = "Is";
-						glm::vec3 Is = dynamic_cast<DirectionalLight*>(sceneLights[j])->GetSpecular();
-						shaderProgramToUse->SetUniform3fv(IsName, Is);
-
-						lightSubroutine = "directional";
-
-						break;
-					}
-					case PAG::LightType::POINT: {
-
-						std::string lightPositionName = "lightPosition";
-						glm::vec3 lightPosition = dynamic_cast<PointLight*>(sceneLights[j])->GetPosition();
-						glm::vec4 lightPositionView = viewMatrix * glm::vec4(lightPosition, 1.0);
-
-						shaderProgramToUse->SetUniform3fv(lightPositionName, glm::vec3(lightPositionView));
-
-						std::string IdName = "Id";
-						glm::vec3 Id = dynamic_cast<PointLight*>(sceneLights[j])->GetDiffuse();
-						shaderProgramToUse->SetUniform3fv(IdName, Id);
-
-						std::string IsName = "Is";
-						glm::vec3 Is = dynamic_cast<PointLight*>(sceneLights[j])->GetSpecular();
-						shaderProgramToUse->SetUniform3fv(IsName, Is);
-
-						lightSubroutine = "point";
-
-						break;
-					}
-					case PAG::LightType::SPOT: {
-
-						std::string lightPositionName = "lightPosition";
-						glm::vec3 lightPosition = dynamic_cast<SpotLight*>(sceneLights[j])->GetPosition();
-						glm::vec4 lightPositionView = viewMatrix * glm::vec4(lightPosition, 1.0);
-
-						shaderProgramToUse->SetUniform3fv(lightPositionName, glm::vec3(lightPositionView));
-
-						std::string lightDirectionName = "lightDirection";
-						glm::vec3 lightDirection = dynamic_cast<SpotLight*>(sceneLights[j])->GetDirection();
-						glm::vec4 lightDirectionView = glm::transpose(glm::inverse(viewMatrix)) * glm::vec4(lightDirection, 0.0);
-
-						shaderProgramToUse->SetUniform3fv(lightDirectionName, glm::vec3(lightDirectionView));
-
-						std::string spotLightAngleName = "spotlightAngle";
-						float spotLightAngle = dynamic_cast<SpotLight*>(sceneLights[j])->GetSpotlightAngle();
-						shaderProgramToUse->SetUniform1f(spotLightAngleName, spotLightAngle);
-
-						std::string IdName = "Id";
-						glm::vec3 Id = dynamic_cast<SpotLight*>(sceneLights[j])->GetDiffuse();
-						shaderProgramToUse->SetUniform3fv(IdName, Id);
-
-						std::string IsName = "Is";
-						glm::vec3 Is = dynamic_cast<SpotLight*>(sceneLights[j])->GetSpecular();
-						shaderProgramToUse->SetUniform3fv(IsName, Is);
-
-						lightSubroutine = "spot";
-
-						break;
-					}
-					}
-
-#pragma endregion
-
-					std::string renderSubroutine;
+					ShaderProgram* shaderProgramToUse = models[i]->GetMaterial()->GetShaderProgram();
 
 					switch (models[i]->GetRenderMode()) {
 					case RenderMode::SOLID: {
 						renderSubroutine = "materialColor";
+
+						shaderProgramToUse->SetUniform3fv("Ka", models[i]->GetMaterial()->GetAmbientColor());
+						shaderProgramToUse->SetUniform3fv("Kd", models[i]->GetMaterial()->GetDiffuseColor());
+
 						glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 						break;
 					}
 					case RenderMode::TEXTURE: {
 						renderSubroutine = "textureColor";
+
+						if (models[i]->GetMaterial()->IsNormalMap()) {
+
+							shaderProgramToUse = models[i]->GetMaterial()->GetShaderProgramNormalMap();
+
+							shaderProgramToUse->SetUniformSampler2D("normalTextureSampler", 1);
+							models[i]->GetMaterial()->GetTextureNormalMap()->ActivateTexture(1);
+						}
+						else {
+
+							shaderProgramToUse->SetUniform3fv("Ka", models[i]->GetMaterial()->GetAmbientColor());
+							shaderProgramToUse->SetUniform3fv("Kd", models[i]->GetMaterial()->GetDiffuseColor());
+						}
+
 						shaderProgramToUse->SetUniformSampler2D("textureSampler", 0);
 						models[i]->GetMaterial()->GetTexture()->ActivateTexture(0);
 						glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -264,8 +150,69 @@ void PAG::Renderer::Refresh()
 					}
 					}
 
-					shaderProgramToUse->SetSubroutineUniforms(lightSubroutine, renderSubroutine);
+#pragma region Common Uniforms
 
+					shaderProgramToUse->SetUniform4fm("mModelViewProj", virtualCamera->GetViewProjMatrix() * models[i]->GetTransform()->GetModelMatrix());
+					shaderProgramToUse->SetUniform4fm("mModelView", virtualCamera->GetViewMatrix() * models[i]->GetTransform()->GetModelMatrix());
+					shaderProgramToUse->SetUniform4fm("mModelViewIT", glm::inverse(glm::transpose(virtualCamera->GetViewMatrix() * models[i]->GetTransform()->GetModelMatrix())));
+
+
+					shaderProgramToUse->SetUniform3fv("Ks", models[i]->GetMaterial()->GetSpecularColor());
+					shaderProgramToUse->SetUniform1f("phongExponent", models[i]->GetMaterial()->GetPhongExponent());
+
+#pragma endregion
+
+#pragma region Light Uniforms
+
+					glm::mat4 viewMatrix = virtualCamera->GetViewMatrix();	
+
+					switch (sceneLights[j]->GetLightType())
+					{
+					case PAG::LightType::AMBIENT: {
+
+						shaderProgramToUse->SetUniform3fv("Ia", dynamic_cast<AmbientLight*>(sceneLights[j])->GetAmbient());
+						lightSubroutine = "ambient";
+						break;
+					}
+					case PAG::LightType::DIRECTIONAL: {
+
+						glm::vec3 lightDirection = dynamic_cast<DirectionalLight*>(sceneLights[j])->GetDirection();
+
+						shaderProgramToUse->SetUniform3fv("lightDirection", glm::vec3(glm::transpose(glm::inverse(viewMatrix)) * glm::vec4(lightDirection, 0.0)));
+						shaderProgramToUse->SetUniform3fv("Id", dynamic_cast<DirectionalLight*>(sceneLights[j])->GetDiffuse());
+						shaderProgramToUse->SetUniform3fv("Is", dynamic_cast<DirectionalLight*>(sceneLights[j])->GetSpecular());
+						lightSubroutine = "directional";
+						break;
+					}
+					case PAG::LightType::POINT: {
+
+						glm::vec3 lightPosition = dynamic_cast<PointLight*>(sceneLights[j])->GetPosition();
+
+						shaderProgramToUse->SetUniform3fv("lightPosition", glm::vec3(viewMatrix * glm::vec4(lightPosition, 1.0)));
+						shaderProgramToUse->SetUniform3fv("Id", dynamic_cast<PointLight*>(sceneLights[j])->GetDiffuse());
+						shaderProgramToUse->SetUniform3fv("Is", dynamic_cast<PointLight*>(sceneLights[j])->GetSpecular());
+						lightSubroutine = "point";
+						break;
+					}
+					case PAG::LightType::SPOT: {
+
+						glm::vec3 lightPosition = dynamic_cast<SpotLight*>(sceneLights[j])->GetPosition();
+						glm::vec3 lightDirection = dynamic_cast<SpotLight*>(sceneLights[j])->GetDirection();
+
+						shaderProgramToUse->SetUniform3fv("lightPosition", glm::vec3(viewMatrix * glm::vec4(lightPosition, 1.0)));
+						shaderProgramToUse->SetUniform3fv("lightDirection", glm::vec3(glm::transpose(glm::inverse(viewMatrix)) * glm::vec4(lightDirection, 0.0)));
+						shaderProgramToUse->SetUniform1f("spotlightAngle", dynamic_cast<SpotLight*>(sceneLights[j])->GetSpotlightAngle());
+						shaderProgramToUse->SetUniform3fv("Id", dynamic_cast<SpotLight*>(sceneLights[j])->GetDiffuse());
+						shaderProgramToUse->SetUniform3fv("Is", dynamic_cast<SpotLight*>(sceneLights[j])->GetSpecular());
+						lightSubroutine = "spot";
+						break;
+					}
+					}
+
+#pragma endregion
+
+					glUseProgram(shaderProgramToUse->GetID());
+					shaderProgramToUse->SetSubroutineUniforms(lightSubroutine, renderSubroutine);
 					glDrawElements(GL_TRIANGLES, models[i]->GetNumIndex(), GL_UNSIGNED_INT, nullptr);
 				}
 			}
@@ -324,6 +271,8 @@ void PAG::Renderer::AddModel(int model)
 	case 2:
 		try {
 			material->SetTexture(new Texture(".\\textures\\dado.png"));
+			material->SetNormalMapTexture(new Texture(".\\textures\\NormalMap.png"));
+			material->SetShaderProgramNormalMap("vs-normal", "fs-normal");
 			models.push_back(new Model(".\\models\\dado.obj", material));
 		}
 		catch (std::exception& ex) {

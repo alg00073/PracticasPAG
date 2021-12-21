@@ -66,7 +66,6 @@ namespace PAG {
 		std::vector<GLuint> index;
 
 		Transform* transform;
-		
 		Material* material;
 
 		GLuint idVAO = 0; // Identificador del vertex array object
