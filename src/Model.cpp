@@ -167,6 +167,14 @@ PAG::Transform* PAG::Model::GetTransform()
 	return transform;
 }
 
+void PAG::Model::RenderModel()
+{
+	glBindVertexArray(idVAO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idIBO);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glDrawElements(GL_TRIANGLES, index.size(), GL_UNSIGNED_INT, nullptr);
+}
+
 void PAG::Model::processNode(aiNode* node, const aiScene* scene)
 {
 	// process all the node's meshes (if any)
@@ -199,8 +207,6 @@ void PAG::Model::processNode(aiNode* node, const aiScene* scene)
 			glm::vec3 bitangent(0.0f, 0.0f, 0.0f);
 
 			if (mesh->mTangents) {
-
-				std::cout << "Tiene tangentes" << std::endl;
 
 				tangent.x = mesh->mTangents[i].x;
 				tangent.y = mesh->mTangents[i].y;

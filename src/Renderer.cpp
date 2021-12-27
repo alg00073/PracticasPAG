@@ -1,19 +1,35 @@
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include <GL/glew.h> // En algunos casos, este include se puede omitir
 #include <GL/gl.h>
 
 #include "Renderer.h"
+#include <glm/gtx/transform.hpp>
 
 PAG::Renderer* PAG::Renderer::instance = nullptr;
 
 PAG::Renderer::Renderer()
 {
-	AddModel(0);
+	shaderProgramShadowMap = new ShaderProgram("vs-shadow", "fs-shadow");
+
+#pragma region Setting Scene
+
+	AddModel(3);
+	AddModel(2);
+
+	models[0]->GetTransform()->SetPosition(glm::vec3(0, -.65, 0));
+	models[0]->SetRenderMode(RenderMode::TEXTURE);
+
+	models[1]->GetTransform()->SetPosition(glm::vec3(0, .65, 0));
+	models[1]->SetRenderMode(RenderMode::TEXTURE);
+
+#pragma endregion
 
 #pragma region Camera Parameters
 
 	glm::vec3 cameraPosition(0, 0, 2);
 	glm::vec3 cameraLookAt(0, 0, 0);
-	float cameraFovX = glm::radians(60.0f);
+	float cameraFovX = glm::radians(90.0f);
 	float cameraNearZ = 0.5;
 	float cameraFarZ = 6;
 	int cameraHeight = 576;
@@ -28,7 +44,7 @@ PAG::Renderer::Renderer()
 
 	glm::vec3 pointLightPosition(-0.125, 0.275, 0.25);
 	glm::vec3 spotLightPosition(0.7, 0.7, 0.7);
-	glm::vec3 directionalLightDirection(0, 1, 1);
+	glm::vec3 directionalLightDirection(0, 1, 0);
 
 	glm::vec3 spotLightDirection(-1, -1, -1);
 	float spotlightAngle = 15;
@@ -39,10 +55,10 @@ PAG::Renderer::Renderer()
 
 #pragma endregion
 
-	sceneLights.push_back(new PointLight(pointLightPosition, diffuseIntensity, specularIntensity));
-	sceneLights.push_back(new AmbientLight(ambientIntensity));
-	sceneLights.push_back(new DirectionalLight(glm::normalize(directionalLightDirection), diffuseIntensity, specularIntensity));
-	sceneLights.push_back(new SpotLight(spotLightPosition, glm::normalize(spotLightDirection), diffuseIntensity, specularIntensity, spotlightAngle));
+	//sceneLights.push_back(new Light(pointLightPosition, diffuseIntensity, specularIntensity, LightType::POINT));
+	sceneLights.push_back(new Light(ambientIntensity));
+	sceneLights.push_back(new Light(glm::normalize(directionalLightDirection), diffuseIntensity, specularIntensity, LightType::DIRECTIONAL));
+	//sceneLights.push_back(new Light(spotLightPosition, glm::normalize(spotLightDirection), diffuseIntensity, specularIntensity, spotlightAngle));
 }
 
 PAG::Renderer::~Renderer()
@@ -50,11 +66,13 @@ PAG::Renderer::~Renderer()
 	delete[] models.data();
 	delete[] sceneLights.data();
 	delete virtualCamera;
+	delete shaderProgramShadowMap;
 
 	models.clear();
 	sceneLights.clear();
 
 	virtualCamera = nullptr;
+	shaderProgramShadowMap = nullptr;
 }
 
 /**
@@ -67,6 +85,14 @@ void PAG::Renderer::InitializeOpenGL()
 	glEnable(GL_MULTISAMPLE);
 	glEnable(GL_BLEND);
 	glDepthFunc(GL_LEQUAL);
+
+	InitializeShadowMapping();
+}
+
+void PAG::Renderer::InitializeShadowMapping()
+{
+	shadowFBO = 0;
+	glGenFramebuffers(1, &shadowFBO);
 }
 
 double* PAG::Renderer::GetClearColor()
@@ -94,14 +120,19 @@ PAG::Renderer* PAG::Renderer::Instance()
 
 void PAG::Renderer::Refresh()
 {
+	if (needRecalculateShadowMap) {
+		needRecalculateShadowMap = false;
+		RecalculateShadowMaps();
+	}
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, virtualCamera->GetWidth(), virtualCamera->GetHeight());
 
 	try {
 		if (activeModel != -1) {
 
-			for (int i = 0; i < models.size(); i++) {
-
-				for (int j = 0; j < sceneLights.size(); j++) {
+			for (int j = 0; j < sceneLights.size(); j++) {
+				for (int i = 0; i < models.size(); i++) {
 
 					glBlendFunc(GL_SRC_ALPHA, j == 0 ? GL_ONE_MINUS_SRC_ALPHA : GL_ONE);
 					glBindVertexArray(models[i]->GetIdVAO());
@@ -111,6 +142,7 @@ void PAG::Renderer::Refresh()
 					std::string lightSubroutine;
 
 					ShaderProgram* shaderProgramToUse = models[i]->GetMaterial()->GetShaderProgram();
+					glUseProgram(shaderProgramToUse->GetID());
 
 					switch (models[i]->GetRenderMode()) {
 					case RenderMode::SOLID: {
@@ -128,6 +160,7 @@ void PAG::Renderer::Refresh()
 						if (models[i]->GetMaterial()->IsNormalMap()) {
 
 							shaderProgramToUse = models[i]->GetMaterial()->GetShaderProgramNormalMap();
+							glUseProgram(shaderProgramToUse->GetID());
 
 							shaderProgramToUse->SetUniformSampler2D("normalTextureSampler", 1);
 							models[i]->GetMaterial()->GetTextureNormalMap()->ActivateTexture(1);
@@ -156,7 +189,6 @@ void PAG::Renderer::Refresh()
 					shaderProgramToUse->SetUniform4fm("mModelView", virtualCamera->GetViewMatrix() * models[i]->GetTransform()->GetModelMatrix());
 					shaderProgramToUse->SetUniform4fm("mModelViewIT", glm::inverse(glm::transpose(virtualCamera->GetViewMatrix() * models[i]->GetTransform()->GetModelMatrix())));
 
-
 					shaderProgramToUse->SetUniform3fv("Ks", models[i]->GetMaterial()->GetSpecularColor());
 					shaderProgramToUse->SetUniform1f("phongExponent", models[i]->GetMaterial()->GetPhongExponent());
 
@@ -164,47 +196,63 @@ void PAG::Renderer::Refresh()
 
 #pragma region Light Uniforms
 
-					glm::mat4 viewMatrix = virtualCamera->GetViewMatrix();	
+					glm::mat4 viewMatrix = virtualCamera->GetViewMatrix();
 
 					switch (sceneLights[j]->GetLightType())
 					{
 					case PAG::LightType::AMBIENT: {
 
-						shaderProgramToUse->SetUniform3fv("Ia", dynamic_cast<AmbientLight*>(sceneLights[j])->GetAmbient());
+						shaderProgramToUse->SetUniform3fv("Ia", sceneLights[j]->GetAmbient());
 						lightSubroutine = "ambient";
 						break;
 					}
 					case PAG::LightType::DIRECTIONAL: {
 
-						glm::vec3 lightDirection = dynamic_cast<DirectionalLight*>(sceneLights[j])->GetDirection();
-
+						glm::vec3 lightDirection = sceneLights[j]->GetDirection();
 						shaderProgramToUse->SetUniform3fv("lightDirection", glm::vec3(glm::transpose(glm::inverse(viewMatrix)) * glm::vec4(lightDirection, 0.0)));
-						shaderProgramToUse->SetUniform3fv("Id", dynamic_cast<DirectionalLight*>(sceneLights[j])->GetDiffuse());
-						shaderProgramToUse->SetUniform3fv("Is", dynamic_cast<DirectionalLight*>(sceneLights[j])->GetSpecular());
+						shaderProgramToUse->SetUniform3fv("Id", sceneLights[j]->GetDiffuse());
+						shaderProgramToUse->SetUniform3fv("Is", sceneLights[j]->GetSpecular());
 						lightSubroutine = "directional";
+
+						glm::mat4 mShadow = glm::scale(glm::vec3(.5, .5, .5));
+						mShadow[3][0] = mShadow[3][1] = mShadow[3][2] = 0.5;
+						mShadow = mShadow * sceneLights[j]->GetLightVisionProjMatrix() * models[i]->GetTransform()->GetModelMatrix();
+						shaderProgramToUse->SetUniform4fm("mShadow", mShadow);
+
+						// Coger la textura, bindearla y activarla.
+						// Pasar uniform textura al shader program.
+						glActiveTexture(GL_TEXTURE2); // Activamos unidad de textura
+						glBindTexture(GL_TEXTURE_2D, sceneLights[j]->GetDepthTexture()); // Asociamos la textura del FB
+						shaderProgramToUse->SetUniformSampler2D("shadowSampler", 2);
+
 						break;
 					}
 					case PAG::LightType::POINT: {
 
-						glm::vec3 lightPosition = dynamic_cast<PointLight*>(sceneLights[j])->GetPosition();
-
-						shaderProgramToUse->SetUniform3fv("lightPosition", glm::vec3(viewMatrix * glm::vec4(lightPosition, 1.0)));
-						shaderProgramToUse->SetUniform3fv("Id", dynamic_cast<PointLight*>(sceneLights[j])->GetDiffuse());
-						shaderProgramToUse->SetUniform3fv("Is", dynamic_cast<PointLight*>(sceneLights[j])->GetSpecular());
+						shaderProgramToUse->SetUniform3fv("lightPosition", glm::vec3(viewMatrix * glm::vec4(sceneLights[j]->GetPosition(), 1.0)));
+						shaderProgramToUse->SetUniform3fv("Id", sceneLights[j]->GetDiffuse());
+						shaderProgramToUse->SetUniform3fv("Is", sceneLights[j]->GetSpecular());
 						lightSubroutine = "point";
 						break;
 					}
 					case PAG::LightType::SPOT: {
 
-						glm::vec3 lightPosition = dynamic_cast<SpotLight*>(sceneLights[j])->GetPosition();
-						glm::vec3 lightDirection = dynamic_cast<SpotLight*>(sceneLights[j])->GetDirection();
-
-						shaderProgramToUse->SetUniform3fv("lightPosition", glm::vec3(viewMatrix * glm::vec4(lightPosition, 1.0)));
-						shaderProgramToUse->SetUniform3fv("lightDirection", glm::vec3(glm::transpose(glm::inverse(viewMatrix)) * glm::vec4(lightDirection, 0.0)));
-						shaderProgramToUse->SetUniform1f("spotlightAngle", dynamic_cast<SpotLight*>(sceneLights[j])->GetSpotlightAngle());
-						shaderProgramToUse->SetUniform3fv("Id", dynamic_cast<SpotLight*>(sceneLights[j])->GetDiffuse());
-						shaderProgramToUse->SetUniform3fv("Is", dynamic_cast<SpotLight*>(sceneLights[j])->GetSpecular());
+						shaderProgramToUse->SetUniform3fv("lightPosition", glm::vec3(viewMatrix * glm::vec4(sceneLights[j]->GetPosition(), 1.0)));
+						shaderProgramToUse->SetUniform3fv("lightDirection", glm::vec3(glm::transpose(glm::inverse(viewMatrix)) * glm::vec4(sceneLights[j]->GetDirection(), 0.0)));
+						shaderProgramToUse->SetUniform1f("spotlightAngle", sceneLights[j]->GetSpotlightAngle());
+						shaderProgramToUse->SetUniform3fv("Id", sceneLights[j]->GetDiffuse());
+						shaderProgramToUse->SetUniform3fv("Is", sceneLights[j]->GetSpecular());
 						lightSubroutine = "spot";
+
+						glm::mat4 mShadow = glm::scale(glm::vec3(.5, .5, .5));
+						mShadow[3][0] = mShadow[3][1] = mShadow[3][2] = 0.5;
+						mShadow = mShadow * sceneLights[j]->GetLightVisionProjMatrix() * models[i]->GetTransform()->GetModelMatrix();
+						shaderProgramToUse->SetUniform4fm("mShadow", mShadow);
+
+						glActiveTexture(GL_TEXTURE2); // Activamos unidad de textura
+						glBindTexture(GL_TEXTURE_2D, sceneLights[j]->GetDepthTexture()); // Asociamos la textura del FB
+						shaderProgramToUse->SetUniformSampler2D("shadowSampler", 2);
+
 						break;
 					}
 					}
@@ -237,6 +285,71 @@ void PAG::Renderer::ShoutInfo()
 		<< glGetString(GL_VENDOR) << std::endl
 		<< glGetString(GL_VERSION) << std::endl
 		<< glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+}
+
+void PAG::Renderer::RecalculateShadowMaps()
+{
+	for (int i = 0; i < sceneLights.size(); i++) {
+		if (sceneLights[i]->CastShadows()) {
+
+			GLuint depthTex = sceneLights[i]->GetDepthTexture();
+
+			glActiveTexture(GL_TEXTURE2); // Activamos unidad de textura
+			glBindTexture(GL_TEXTURE_2D, depthTex); // Asociamos la textura del FBO
+
+			glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+				GL_TEXTURE_2D, depthTex, 0);
+
+			glReadBuffer(GL_NONE); // NO necesitamos información de color; sólo la
+			glDrawBuffer(GL_NONE); // profundidad
+
+			GLenum result = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+			if (result != GL_FRAMEBUFFER_COMPLETE) {
+				std::cout << "Framebuffer for shadows is not complete." << std::endl;
+			}
+
+			// Sólo borramos profundidad. Ignoramos color
+			glClear(GL_DEPTH_BUFFER_BIT);
+
+			// IMPORTANTE: el viewport tiene que tener las dimensiones del mapa de
+			// sombras, Y LUEGO HAY QUE DEVOLVERLO A SU TAMAÑO CUANDO SE VAYA A
+			// RENDERIZAR LA ESCENA NORMALMENTE
+			glViewport(0, 0, 1024, 1024);
+			// ¡OJO! Cambiamos la función del Z-buffer
+			glEnable(GL_DEPTH_TEST);
+			glDepthFunc(GL_LESS);
+			// Para evitar el “shadow acne”, eliminamos caras delanteras
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_FRONT);
+			// Tomamos la matriz de visión y proyección de la cámara asociada a la luz
+			// (mVP)
+			for (int j = 0; j < models.size(); j++) {
+
+				glm::mat4 mVP = sceneLights[i]->GetLightVisionProjMatrix();
+
+				// Tomar la matriz de modelado del modelo actual (mM)
+				glm::mat4 mModelViewProj = mVP * models[j]->GetTransform()->GetModelMatrix();
+
+				// Aplicar matrizMVP como uniform para el shader program de cálculo de mapas de sombra
+				glUseProgram(shaderProgramShadowMap->GetID());
+				shaderProgramShadowMap->SetUniform4fm("mModelViewProj", mModelViewProj);
+
+				// Renderizar los triángulos del modelo actual
+				models[j]->RenderModel();
+			}
+		}
+	}
+
+	// IMPORTANTE: Vuelve a activar el frame buffer del sistema de ventanas
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// IMPORTANTE 2: para renderizar la escena normalmente, hay que volver a
+	// cambiar la función del Z-buffer, poniéndola en GL_LEQUAL
+	glDepthFunc(GL_LEQUAL);
+
+	// IMPORTANTE 3: hay que volver a activar el dibujado de las caras delanteras.
+	glDisable(GL_CULL_FACE);
 }
 
 int PAG::Renderer::SwitchActiveModel()
@@ -291,7 +404,7 @@ void PAG::Renderer::AddModel(int model)
 		SwitchActiveModel();
 	}
 
-	Refresh();
+	needRecalculateShadowMap = true;
 }
 
 void PAG::Renderer::DeleteModel()
@@ -300,6 +413,8 @@ void PAG::Renderer::DeleteModel()
 		models.erase(models.begin() + activeModel);
 		SwitchActiveModel();
 	}
+
+	needRecalculateShadowMap = true;
 }
 
 std::string PAG::Renderer::SwitchTransformMode()
@@ -355,6 +470,8 @@ void PAG::Renderer::ApplyTransform(glm::vec3 deltaTransform)
 			break;
 		}
 	}
+
+	needRecalculateShadowMap = true;
 }
 
 void PAG::Renderer::ChangeCameraMovement(PAG::CameraMovementType type)
@@ -384,7 +501,7 @@ void PAG::Renderer::SwitchRenderMode()
 		case RenderMode::SOLID:
 			models[activeModel]->SetRenderMode(RenderMode::WIREFRAME);
 			break;
-		case RenderMode::WIREFRAME: 
+		case RenderMode::WIREFRAME:
 			try {
 				models[activeModel]->SetRenderMode(RenderMode::TEXTURE);
 			}
@@ -392,7 +509,7 @@ void PAG::Renderer::SwitchRenderMode()
 				std::cout << ex.what() << std::endl;
 			}
 			break;
-		case RenderMode::TEXTURE: 
+		case RenderMode::TEXTURE:
 			models[activeModel]->SetRenderMode(RenderMode::SOLID);
 			break;
 		}

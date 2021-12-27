@@ -99,6 +99,8 @@ namespace PAG {
 		Material* GetMaterial();
 
 		Transform* GetTransform();
+
+		void RenderModel();
 	};
 }
 

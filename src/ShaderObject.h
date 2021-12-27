@@ -15,6 +15,7 @@ namespace PAG {
 	private:
 		ShaderType type;
 
+		const std::string directory = ".\\shaders\\";
 		const std::string filePrefix = "pag10-";
 		const std::string fileSufix = ".glsl";
 

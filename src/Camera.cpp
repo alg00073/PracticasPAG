@@ -49,6 +49,16 @@ void PAG::Camera::SetWidth(int width)
 	this->width = width;
 }
 
+int PAG::Camera::GetHeight()
+{
+	return height;
+}
+
+int PAG::Camera::GetWidth()
+{
+	return width;
+}
+
 void PAG::Camera::RecalculateCamera()
 {
 	aspect = (float)width / (float)height;
@@ -181,6 +191,4 @@ void PAG::Camera::Zoom(float angle)
 	fovX += angle;
 
 	fovX = glm::clamp(fovX, 0.01f, 2.0f);
-
-	std::cout << fovX << std::endl;
 }

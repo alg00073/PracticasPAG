@@ -138,8 +138,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		PAG::Renderer::Instance()->ApplyCameraMovement(0, -1);
 		break;
 	default:
-		std::cout << 
-			
+		std::cout << 	
 			// Controles para mover el modelo
 			"CONTROLES: \nWASD: Mover el modelo activo en el plano XY" << 
 			"\nQE: Mover el modelo activo en el eje Z" << "\nLEFT CTRL: Cambiar modo de transformacion" <<
@@ -188,14 +187,11 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
 	if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS)
 	{
-		std::cout << "Pulsado el boton: " << button << std::endl;
 		leftMouseButtonPressed = true;
-
 		glfwGetCursorPos(window, &lastMouseX, &lastMouseY);
 	}
 	else if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_RELEASE)
 	{
-		std::cout << "Soltado el boton: " << button << std::endl;
 		leftMouseButtonPressed = false;
 	}
 }

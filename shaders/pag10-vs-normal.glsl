@@ -9,12 +9,14 @@ layout (location = 4) in vec3 vBitangent;
 uniform mat4 mModelViewProj;
 uniform mat4 mModelView;
 uniform mat4 mModelViewIT;
+uniform mat4 mShadow;
 
 uniform vec3 lightPosition;
 uniform vec3 lightDirection;
 
 out vec3 tangentPosition;
 out vec2 texCoord;
+out vec4 shadowCoord;
 
 out vec3 lightPosTangent;
 out vec3 lightDirTangent;
@@ -31,6 +33,7 @@ void main ()
 
 	tangentPosition = TBN * vec3(mModelView * vec4(vPosition, 1.0));
     texCoord = vTexCoord;
+	shadowCoord = mShadow * vec4(vPosition, 1.0);
 
 	lightPosTangent = TBN * lightPosition;
 	lightDirTangent = TBN * lightDirection;

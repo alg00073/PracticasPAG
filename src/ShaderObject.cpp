@@ -87,11 +87,14 @@ std::string PAG::ShaderObject::GetFileName()
 std::string PAG::ShaderObject::LoadShader(std::string name)
 {
 	std::ifstream shaderFile;
-	shaderFile.open(filePrefix + name + fileSufix);
+
+	std::string root = directory + filePrefix + name + fileSufix;
+
+	shaderFile.open(root);
 
 	if (!shaderFile.is_open())
 	{
-		throw std::runtime_error("ShaderObject::LoadShader() -> No se pudo abrir el fichero: " + filePrefix + name + fileSufix);
+		throw std::runtime_error("ShaderObject::LoadShader() -> No se pudo abrir el fichero: " + root);
 	}
 
 	std::stringstream shaderStream;

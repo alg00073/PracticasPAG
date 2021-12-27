@@ -4,6 +4,7 @@
 
 in vec3 tangentPosition;
 in vec2 texCoord;
+in vec4 shadowCoord;
 
 in vec3 lightPosTangent;
 in vec3 lightDirTangent;
@@ -19,6 +20,7 @@ uniform float spotlightAngle;
 
 uniform sampler2D textureSampler;
 uniform sampler2D normalTextureSampler;
+uniform sampler2DShadow shadowSampler;
 
 layout (location = 0) out vec4 fragColor;
 
@@ -67,7 +69,8 @@ vec3 directional(vec3 colorKa, vec3 colorKd, vec4 normal)
   vec3 diffuse = Id * colorKd * max( dot(l, n), 0.0 );
   vec3 specular = Is * Ks * pow( max( dot(r, v), 0.0), phongExponent);
 
-  return diffuse + specular;
+  float shadow = textureProj ( shadowSampler, shadowCoord );
+  return (diffuse + specular) * shadow;
 }
 
 subroutine (calculateLight)
@@ -88,7 +91,8 @@ vec3 spot(vec3 colorKa, vec3 colorKd, vec4 normal)
   vec3 diffuse = (Id * colorKd * max( dot(l, n), 0.0 ) );
   vec3 specular = (Is * Ks * pow( max( dot(r, v), 0.0), phongExponent) );
 
-  return (diffuse + specular) * spotlightFactor;
+  float shadow = textureProj ( shadowSampler, shadowCoord );
+  return (diffuse + specular) * spotlightFactor * shadow;
 }
 
 subroutine (chooseColor)
